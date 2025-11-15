@@ -6,8 +6,11 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // สำหรับ local development ใช้ SQLite:
+  // provider = "sqlite"
+  // url      = "file:./dev.db"
 }
 
 model User {
