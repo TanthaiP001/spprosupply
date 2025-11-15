@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import bcrypt from "bcryptjs";
+import { hashPassword } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await hashPassword(password);
 
     // Create user
     const user = await prisma.user.create({
@@ -58,10 +58,27 @@ export async function POST(request: NextRequest) {
       { message: "สมัครสมาชิกสำเร็จ", user },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Register error:", error);
+    console.error("Error details:", {
+      message: error?.message,
+      stack: error?.stack,
+      name: error?.name,
+    });
+    
+    // Return more specific error message
+    if (error?.code === "P2002") {
+      return NextResponse.json(
+        { error: "อีเมลนี้ถูกใช้งานแล้ว" },
+        { status: 400 }
+      );
+    }
+    
     return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการสมัครสมาชิก" },
+      { 
+        error: "เกิดข้อผิดพลาดในการสมัครสมาชิก",
+        details: process.env.NODE_ENV === "development" ? error?.message : undefined
+      },
       { status: 500 }
     );
   }
