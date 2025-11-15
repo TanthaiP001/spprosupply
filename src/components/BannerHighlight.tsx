@@ -8,7 +8,6 @@ interface BannerHighlightProps {
   description: string;
   image: string;
   link: string;
-  buttonText?: string;
 }
 
 export default function BannerHighlight({
@@ -16,7 +15,6 @@ export default function BannerHighlight({
   description,
   image,
   link,
-  buttonText = "ดูเพิ่มเติม",
 }: BannerHighlightProps) {
   return (
     <Link
@@ -39,9 +37,6 @@ export default function BannerHighlight({
             <p className="text-base md:text-lg mb-4 drop-shadow-md opacity-90">
               {description}
             </p>
-            <button className="bg-white text-gray-900 px-6 py-2 rounded-md font-semibold hover:bg-gray-100 transition-colors">
-              {buttonText}
-            </button>
           </div>
         </div>
       </div>

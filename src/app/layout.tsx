@@ -3,6 +3,7 @@ import { Inter, Noto_Sans_Thai, Outfit } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -54,6 +55,7 @@ export default function RootLayout({
             {children}
           </CartProvider>
         </AuthProvider>
+        <Analytics />
       </body>
     </html>
   );
