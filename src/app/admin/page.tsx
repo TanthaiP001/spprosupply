@@ -297,7 +297,7 @@ export default function AdminPage() {
                           padding: 12,
                           callbacks: {
                             label: function (context) {
-                              return `ยอดขาย: ${formatPrice(context.parsed.y)}`;
+                              return `ยอดขาย: ${formatPrice(context.parsed.y ?? 0)}`;
                             },
                           },
                           titleFont: {
