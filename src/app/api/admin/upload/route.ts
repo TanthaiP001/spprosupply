@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
-import { existsSync } from "fs";
+import { put } from "@vercel/blob";
 import { verifyAdmin } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
@@ -47,38 +45,32 @@ export async function POST(request: NextRequest) {
     const allowedTypes = ["products", "banners"];
     const finalType = allowedTypes.includes(uploadType) ? uploadType : "products";
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = join(process.cwd(), "public", "uploads", finalType);
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true });
-    }
-
     // Generate unique filename
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
     const timestamp = Date.now();
     const originalName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-    const filename = `${timestamp}-${originalName}`;
-    const filepath = join(uploadsDir, filename);
+    const filename = `${finalType}/${timestamp}-${originalName}`;
 
-    // Save file
-    await writeFile(filepath, buffer);
-
-    // Return public URL
-    const publicUrl = `/uploads/${finalType}/${filename}`;
+    // Upload to Vercel Blob Storage
+    const blob = await put(filename, file, {
+      access: "public",
+      contentType: file.type,
+    });
 
     return NextResponse.json(
       { 
         message: "อัปโหลดสำเร็จ",
-        url: publicUrl,
+        url: blob.url,
         filename: filename,
       },
       { status: 200 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Upload error:", error);
     return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการอัปโหลดไฟล์" },
+      { 
+        error: "เกิดข้อผิดพลาดในการอัปโหลดไฟล์",
+        details: process.env.NODE_ENV === "development" ? error?.message : undefined,
+      },
       { status: 500 }
     );
   }
