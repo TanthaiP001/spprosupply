@@ -1,0 +1,114 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  phone     String
+  address   String?
+  district  String?
+  province  String?
+  postalCode String?
+  role      String   @default("user") // "user" or "admin"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  products  Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String?  @unique
+  price       Float
+  image       String
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  rating      Float    @default(0)
+  reviews     Int      @default(0)
+  tag         String?
+  isHighlight Boolean  @default(false)
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("products")
+}
+
+model Banner {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  image       String
+  link        String
+  buttonText  String?  @default("ดูเพิ่มเติม")
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("banners")
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  orderNumber   String      @unique
+  userId        String?
+  firstName     String
+  lastName      String
+  phone         String
+  email         String
+  address       String
+  district      String
+  province      String
+  postalCode    String
+  note          String?
+  subtotal      Float
+  shippingFee   Float       @default(0)
+  total         Float
+  paymentSlip   String?     // URL to payment slip image
+  status        String      @default("pending") // pending, confirmed, processing, shipped, completed, cancelled
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  items         OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String   @id @default(cuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String
+  productName String
+  productImage String
+  price       Float
+  quantity    Int
+  createdAt   DateTime @default(now())
+
+  @@map("order_items")
+}
+

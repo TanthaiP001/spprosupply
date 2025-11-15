@@ -1,0 +1,149 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import RightNavbar from "@/components/RightNavbar";
+import { useAuth } from "@/contexts/AuthContext";
+import { User, Lock, ArrowLeft } from "lucide-react";
+
+export default function LoginPage() {
+  const router = useRouter();
+  const { login, isAuthenticated, isAdmin } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (isAdmin) {
+        router.push("/admin");
+      } else {
+        router.push("/profile");
+      }
+    }
+  }, [isAuthenticated, isAdmin, router]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+
+    try {
+      const result = await login(email, password);
+      
+      if (result.success && result.user) {
+        // Redirect based on user role
+        if (result.user.role === "admin") {
+          router.push("/admin");
+        } else {
+          router.push("/profile");
+        }
+      } else {
+        setError("ชื่อผู้ใช้/อีเมลหรือรหัสผ่านไม่ถูกต้อง");
+        setIsLoading(false);
+      }
+    } catch (error) {
+      setError("เกิดข้อผิดพลาดในการเข้าสู่ระบบ");
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-white">
+      <Header />
+      <RightNavbar />
+
+      {/* Banner */}
+      <div className="border-b border-gray-100 bg-gray-50">
+        <div className="container-custom py-8">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm font-light text-gray-600 hover:text-black transition-colors mb-4"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            กลับหน้าหลัก
+          </Link>
+          <h1 className="text-3xl md:text-4xl font-light text-gray-900 tracking-tight">
+            เข้าสู่ระบบ
+          </h1>
+        </div>
+      </div>
+
+      <div className="container-custom py-12">
+        <div className="max-w-md mx-auto">
+          <div className="bg-white border border-gray-100 rounded-lg p-8">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded text-sm font-light">
+                  {error}
+                </div>
+              )}
+
+              <div>
+                <label className="block text-xs font-light text-gray-500 mb-2.5 uppercase tracking-wider">
+                  ชื่อผู้ใช้/อีเมล
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="text"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="กรอกชื่อผู้ใช้หรืออีเมล"
+                    className="w-full pl-10 pr-4 py-2.5 border border-gray-200 focus:outline-none focus:border-black focus:ring-0 transition-colors text-sm font-light bg-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-light text-gray-500 mb-2.5 uppercase tracking-wider">
+                  รหัสผ่าน
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="กรอกรหัสผ่าน"
+                    className="w-full pl-10 pr-4 py-2.5 border border-gray-200 focus:outline-none focus:border-black focus:ring-0 transition-colors text-sm font-light bg-white"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-black text-white py-3 px-4 hover:bg-gray-900 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-sm font-light border border-black"
+              >
+                {isLoading ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
+              </button>
+
+              <div className="text-center pt-4 border-t border-gray-100">
+                <p className="text-sm font-light text-gray-500 mb-4">
+                  ยังไม่มีบัญชี?
+                </p>
+                <Link
+                  href="/register"
+                  className="inline-block w-full bg-white text-gray-900 py-3 px-4 hover:bg-gray-50 transition-colors text-sm font-light border border-gray-200 text-center"
+                >
+                  สมัครสมาชิก
+                </Link>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <Footer />
+    </div>
+  );
+}
+
