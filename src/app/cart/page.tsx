@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import RightNavbar from "@/components/RightNavbar";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { Minus, Plus, Trash2, Upload, X, Check } from "lucide-react";
+import { Minus, Plus, Trash2, Upload, X, Check, Copy, Building2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -50,6 +50,20 @@ export default function CartPage() {
   const [paymentSlip, setPaymentSlip] = useState<File | null>(null);
   const [paymentSlipPreview, setPaymentSlipPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
+
+  const copyToClipboard = async (text: string, accountId: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedAccount(accountId);
+      setTimeout(() => {
+        setCopiedAccount(null);
+      }, 2000);
+    } catch (error) {
+      console.error("Failed to copy:", error);
+      alert("ไม่สามารถคัดลอกได้ กรุณาคัดลอกด้วยตนเอง");
+    }
+  };
 
   // Fetch products for cart items
   useEffect(() => {
@@ -521,6 +535,87 @@ export default function CartPage() {
                     </div>
                   </div>
                 )}
+              </div>
+
+              {/* Bank Account Information */}
+              <div className="bg-white border border-gray-100 rounded-lg p-6">
+                <h2 className="text-lg font-light text-gray-900 mb-6 uppercase tracking-wider">
+                  ข้อมูลบัญชีธนาคาร
+                </h2>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Building2 className="w-5 h-5 text-gray-600" />
+                    <h3 className="text-base font-light text-gray-900">
+                      ธนาคารกรุงไทย สาขาสุพรรณบุรี
+                    </h3>
+                  </div>
+                  
+                  {/* Account 1 */}
+                  <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <p className="text-sm font-light text-gray-600 mb-1">ชื่อบัญชี</p>
+                        <p className="text-base font-light text-gray-900 mb-3">
+                          เอสพี โปร ซัพพลาย
+                        </p>
+                        <p className="text-sm font-light text-gray-600 mb-1">เลขบัญชี</p>
+                        <p className="text-lg font-mono font-semibold text-gray-900">
+                          7100395089
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => copyToClipboard("7100395089", "account1")}
+                        className="flex-shrink-0 px-4 py-2 bg-black text-white text-sm font-light rounded-md hover:bg-gray-800 transition-colors flex items-center gap-2"
+                      >
+                        {copiedAccount === "account1" ? (
+                          <>
+                            <Check className="w-4 h-4" />
+                            คัดลอกแล้ว
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-4 h-4" />
+                            คัดลอก
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Account 2 */}
+                  <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <p className="text-sm font-light text-gray-600 mb-1">ชื่อบัญชี</p>
+                        <p className="text-base font-light text-gray-900 mb-3">
+                          ร้าน เอส พี ซัพพลาย
+                        </p>
+                        <p className="text-sm font-light text-gray-600 mb-1">เลขบัญชี</p>
+                        <p className="text-lg font-mono font-semibold text-gray-900">
+                          7100414350
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => copyToClipboard("7100414350", "account2")}
+                        className="flex-shrink-0 px-4 py-2 bg-black text-white text-sm font-light rounded-md hover:bg-gray-800 transition-colors flex items-center gap-2"
+                      >
+                        {copiedAccount === "account2" ? (
+                          <>
+                            <Check className="w-4 h-4" />
+                            คัดลอกแล้ว
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-4 h-4" />
+                            คัดลอก
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
