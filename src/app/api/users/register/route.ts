@@ -4,6 +4,15 @@ import { hashPassword } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
+    // Check database connection
+    if (!process.env.DATABASE_URL) {
+      console.error("DATABASE_URL is not set");
+      return NextResponse.json(
+        { error: "Server configuration error: Database not configured" },
+        { status: 500 }
+      );
+    }
+
     const body = await request.json();
     const { email, password, firstName, lastName, phone } = body;
 
@@ -64,9 +73,11 @@ export async function POST(request: NextRequest) {
       message: error?.message,
       stack: error?.stack,
       name: error?.name,
+      code: error?.code,
+      meta: error?.meta,
     });
     
-    // Return more specific error message
+    // Prisma errors
     if (error?.code === "P2002") {
       return NextResponse.json(
         { error: "อีเมลนี้ถูกใช้งานแล้ว" },
@@ -74,10 +85,28 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    if (error?.code === "P1001") {
+      return NextResponse.json(
+        { error: "ไม่สามารถเชื่อมต่อกับฐานข้อมูลได้" },
+        { status: 500 }
+      );
+    }
+    
+    // Return error with details in development
+    const errorMessage = process.env.NODE_ENV === "development" 
+      ? error?.message || "Unknown error"
+      : "เกิดข้อผิดพลาดในการสมัครสมาชิก";
+    
     return NextResponse.json(
       { 
-        error: "เกิดข้อผิดพลาดในการสมัครสมาชิก",
-        details: process.env.NODE_ENV === "development" ? error?.message : undefined
+        error: errorMessage,
+        ...(process.env.NODE_ENV === "development" && {
+          details: {
+            code: error?.code,
+            name: error?.name,
+            meta: error?.meta,
+          }
+        })
       },
       { status: 500 }
     );
