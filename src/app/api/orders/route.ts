@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { put } from "@vercel/blob";
 
 // CREATE order (public API)
 export async function POST(request: NextRequest) {
@@ -43,31 +44,38 @@ export async function POST(request: NextRequest) {
     // Generate order number
     const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
 
-    // Handle payment slip upload
+    // Handle payment slip upload to Vercel Blob Storage
     let paymentSlipUrl: string | null = null;
     if (paymentSlipFile) {
-      const bytes = await paymentSlipFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      
-      // Save to public/uploads/orders/
-      const timestamp = Date.now();
-      const fileExtension = paymentSlipFile.name.split('.').pop();
-      const fileName = `${timestamp}-${orderNumber}.${fileExtension}`;
-      
-      // In production, you should use cloud storage
-      // For now, we'll save to local file system
-      const fs = await import('fs');
-      const path = await import('path');
-      
-      // Create directory if it doesn't exist
-      const dir = path.join(process.cwd(), 'public/uploads/orders');
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
+      // Validate file type
+      if (!paymentSlipFile.type.startsWith("image/")) {
+        return NextResponse.json(
+          { error: "กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น" },
+          { status: 400 }
+        );
       }
-      
-      const filePath = path.join(process.cwd(), 'public/uploads/orders', fileName);
-      fs.writeFileSync(filePath, buffer);
-      paymentSlipUrl = `/uploads/orders/${fileName}`;
+
+      // Validate file size (max 5MB)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (paymentSlipFile.size > maxSize) {
+        return NextResponse.json(
+          { error: "ขนาดไฟล์ต้องไม่เกิน 5MB" },
+          { status: 400 }
+        );
+      }
+
+      // Generate unique filename
+      const timestamp = Date.now();
+      const originalName = paymentSlipFile.name.replace(/[^a-zA-Z0-9.-]/g, "_");
+      const filename = `orders/${timestamp}-${orderNumber}-${originalName}`;
+
+      // Upload to Vercel Blob Storage
+      const blob = await put(filename, paymentSlipFile, {
+        access: "public",
+        contentType: paymentSlipFile.type,
+      });
+
+      paymentSlipUrl = blob.url;
     }
 
     // Create order
@@ -114,10 +122,19 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Create order error:", error);
+    console.error("Error details:", {
+      message: error?.message,
+      stack: error?.stack,
+      name: error?.name,
+      code: error?.code,
+    });
     return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการสั่งซื้อ" },
+      { 
+        error: "เกิดข้อผิดพลาดในการสั่งซื้อ",
+        details: process.env.NODE_ENV === "development" ? error?.message : undefined,
+      },
       { status: 500 }
     );
   }
