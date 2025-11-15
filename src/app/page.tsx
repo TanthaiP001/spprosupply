@@ -118,7 +118,6 @@ export default function Home() {
                 description={bannerHighlight.description}
                 image={bannerHighlight.image}
                 link={bannerHighlight.link}
-                buttonText={bannerHighlight.buttonText}
               />
             )}
 
