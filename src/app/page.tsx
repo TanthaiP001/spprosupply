@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import Image from "next/image";
 import Header from "@/components/Header";
 import Banner from "@/components/Banner";
 import Sidebar from "@/components/Sidebar";
@@ -123,7 +124,7 @@ export default function Home() {
 
             {/* Product Highlight Section */}
             <div className="mt-8">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
+              <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-6">
                 {selectedCategory === "all" ? "สินค้าขายดี" : "สินค้าในหมวดหมู่"}
               </h2>
               {isLoading ? (
@@ -141,6 +142,66 @@ export default function Home() {
               ) : (
                 <ProductGrid productsToShow={filteredProducts} />
               )}
+            </div>
+
+            {/* Homepage Banners Section */}
+            <div className="mt-12 -mx-6 md:-mx-0">
+              <div className="grid grid-cols-1 gap-4">
+                <div className="relative w-full rounded-lg overflow-hidden hover:shadow-lg transition-shadow group">
+                  <Image
+                    src="/homepage-banner/1411394429.gif"
+                    alt="Homepage Banner"
+                    width={1200}
+                    height={400}
+                    className="w-full h-auto group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="relative w-full rounded-lg overflow-hidden hover:shadow-lg transition-shadow group">
+                  <Image
+                    src="/homepage-banner/1622742199.gif"
+                    alt="Homepage Banner"
+                    width={1200}
+                    height={400}
+                    className="w-full h-auto group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="relative w-full rounded-lg overflow-hidden hover:shadow-lg transition-shadow group">
+                  <Image
+                    src="/homepage-banner/1945558495.jpg"
+                    alt="Homepage Banner"
+                    width={1200}
+                    height={400}
+                    className="w-full h-auto group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="relative w-full rounded-lg overflow-hidden hover:shadow-lg transition-shadow group">
+                  <Image
+                    src="/homepage-banner/210884266.gif"
+                    alt="Homepage Banner"
+                    width={1200}
+                    height={400}
+                    className="w-full h-auto group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="relative w-full rounded-lg overflow-hidden hover:shadow-lg transition-shadow group">
+                  <Image
+                    src="/homepage-banner/565772067.gif"
+                    alt="Homepage Banner"
+                    width={1200}
+                    height={400}
+                    className="w-full h-auto group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="relative w-full rounded-lg overflow-hidden hover:shadow-lg transition-shadow group">
+                  <Image
+                    src="/homepage-banner/597570734.jpg"
+                    alt="Homepage Banner"
+                    width={1200}
+                    height={400}
+                    className="w-full h-auto group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+              </div>
             </div>
           </main>
         </div>

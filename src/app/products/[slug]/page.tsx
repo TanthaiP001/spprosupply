@@ -337,34 +337,31 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {relatedProducts.map((relatedProduct) => (
-                <Link
+                <div
                   key={relatedProduct.id}
-                  href={`/products/${relatedProduct.slug || relatedProduct.id}`}
-                  className="group bg-gray-50 rounded-lg overflow-hidden hover:shadow-lg transition-all"
+                  className="bg-white rounded-lg overflow-hidden hover:shadow-md transition-shadow group border border-gray-100"
                 >
-                  <div className="relative w-full h-48 bg-white">
-                    <Image
-                      src={relatedProduct.image}
-                      alt={relatedProduct.name}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-sm font-light text-gray-900 mb-2 group-hover:text-black transition-colors line-clamp-2">
-                      {relatedProduct.name}
-                    </h3>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                      <span className="text-xs font-light text-gray-600">
-                        {relatedProduct.rating.toFixed(1)}
-                      </span>
+                  <Link href={`/products/${relatedProduct.slug || relatedProduct.id}`}>
+                    <div className="relative w-full h-48 bg-gray-50 cursor-pointer p-6">
+                      <Image
+                        src={relatedProduct.image}
+                        alt={relatedProduct.name}
+                        fill
+                        className="object-contain group-hover:scale-105 transition-transform duration-300"
+                      />
                     </div>
-                    <div className="text-lg font-light text-gray-900">
+                  </Link>
+                  <div className="p-5">
+                    <Link href={`/products/${relatedProduct.slug || relatedProduct.id}`}>
+                      <h3 className="text-base font-medium text-gray-900 mb-3 hover:text-gray-700 transition-colors cursor-pointer line-clamp-2">
+                        {relatedProduct.name}
+                      </h3>
+                    </Link>
+                    <div className="text-xl font-semibold text-gray-900">
                       {formatPrice(relatedProduct.price)}
                     </div>
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
           </div>
@@ -375,4 +372,5 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     </div>
   );
 }
+
 

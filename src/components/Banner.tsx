@@ -37,7 +37,7 @@ export default function Banner() {
                 placeholder="ค้นหาสินค้าใน Spprosupply"
                 className="flex-1 px-4 py-2 text-gray-700 outline-none"
               />
-              <button className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800 transition-colors flex items-center gap-2">
+              <button className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-2 rounded-md hover:from-green-600 hover:to-emerald-600 transition-all flex items-center gap-2 shadow-md hover:shadow-lg">
                 <Search className="h-4 w-4" />
                 Search
               </button>

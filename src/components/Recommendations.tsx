@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Star, ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react";
+import { ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { useCart } from "@/contexts/CartContext";
 
 interface Product {
   id: string;
@@ -29,6 +31,7 @@ export default function Recommendations() {
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [recommendedProducts, setRecommendedProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { addToCart } = useCart();
 
   const checkScroll = () => {
     if (scrollRef.current) {
@@ -80,14 +83,13 @@ export default function Recommendations() {
   }, [recommendedProducts]);
 
   const formatPrice = (price: number) => {
-    return `$${price.toFixed(2)}`;
+    return `฿${price.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
-  const formatReviews = (reviews: number) => {
-    if (reviews >= 1000) {
-      return `${(reviews / 1000).toFixed(1)}k`;
-    }
-    return reviews.toString();
+  const handleAddToCart = (productId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart(productId, 1);
   };
 
   return (
@@ -95,23 +97,23 @@ export default function Recommendations() {
       <div className="container-custom">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">
-            Explore our recommendations.
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+            สินค้าแนะนำจากทางร้าน
           </h2>
           <div className="flex gap-2">
             <button
               onClick={() => scroll("left")}
               disabled={!canScrollLeft}
-              className="p-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-2 border border-green-200 rounded-md hover:bg-green-50 hover:border-green-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-5 h-5 text-green-600" />
             </button>
             <button
               onClick={() => scroll("right")}
               disabled={!canScrollRight}
-              className="p-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-2 border border-green-200 rounded-md hover:bg-green-50 hover:border-green-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-5 h-5 text-green-600" />
             </button>
           </div>
         </div>
@@ -134,55 +136,39 @@ export default function Recommendations() {
             {recommendedProducts.map((product) => (
             <div
               key={product.id}
-              className="flex-shrink-0 w-64 bg-gray-50 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+              className="flex-shrink-0 w-64 bg-white rounded-lg overflow-hidden hover:shadow-md transition-shadow group border border-gray-100"
             >
               {/* Product Image */}
-              <div className="relative w-full h-48 bg-white">
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  fill
-                  className="object-cover"
-                />
-                {product.tag && (
-                  <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded text-xs font-medium text-gray-700">
-                    {product.tag}
-                  </div>
-                )}
-              </div>
+              <Link href={`/products/${product.slug || product.id}`}>
+                <div className="relative w-full h-48 bg-gray-50 cursor-pointer p-6">
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    className="object-contain group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+              </Link>
 
               {/* Product Info */}
-              <div className="p-4">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {product.name}
-                </h3>
+              <div className="p-5">
+                <Link href={`/products/${product.slug || product.id}`}>
+                  <h3 className="text-base font-medium text-gray-900 mb-3 hover:text-gray-700 transition-colors cursor-pointer line-clamp-2">
+                    {product.name}
+                  </h3>
+                </Link>
 
-                {/* Rating */}
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="flex items-center">
-                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    <span className="ml-1 text-sm font-medium text-gray-900">
-                      {product.rating.toFixed(1)}
-                    </span>
+                {/* Price and Add to Cart */}
+                <div className="flex items-center justify-between">
+                  <div className="text-xl font-semibold text-gray-900">
+                    {formatPrice(product.price)}
                   </div>
-                  <span className="text-sm text-gray-500">
-                    ({formatReviews(product.reviews)} Reviews)
-                  </span>
-                </div>
-
-                {/* Price */}
-                <div className="text-2xl font-bold text-gray-900 mb-4">
-                  {formatPrice(product.price)}
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-2 pt-2 border-t border-gray-100">
-                  <button className="flex-1 bg-black text-white py-2 px-3 rounded hover:bg-gray-800 transition-colors text-xs font-light flex items-center justify-center gap-1.5">
-                    <ShoppingCart className="w-3.5 h-3.5" />
-                    Add to Cart
-                  </button>
-                  <button className="flex-1 bg-transparent text-gray-600 py-2 px-3 rounded hover:text-black hover:bg-gray-50 transition-colors text-xs font-light">
-                    Buy Now
+                  <button
+                    onClick={(e) => handleAddToCart(product.id, e)}
+                    className="bg-gradient-to-r from-green-500 to-emerald-500 text-white py-2 px-4 rounded-md hover:from-green-600 hover:to-emerald-600 transition-all text-sm font-medium flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                  >
+                    <ShoppingCart className="w-4 h-4" />
+                    เพิ่มลงตะกร้า
                   </button>
                 </div>
               </div>
