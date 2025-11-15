@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// GET product by slug (public API)
+// GET product by slug or ID (public API)
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
@@ -9,18 +9,57 @@ export async function GET(
   try {
     const { slug } = await params;
 
-    const product = await prisma.product.findUnique({
-      where: { slug },
-      include: {
-        category: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
+    // Try to find by slug first, if not found, try by ID
+    // CUID format: starts with 'c' followed by 25 alphanumeric characters
+    const isCuid = /^c[a-z0-9]{25}$/.test(slug);
+    
+    let product = null;
+    
+    if (isCuid) {
+      // If it looks like an ID (CUID), search by ID
+      product = await prisma.product.findUnique({
+        where: { id: slug },
+        include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
           },
         },
-      },
-    });
+      });
+    } else {
+      // Otherwise, search by slug
+      product = await prisma.product.findUnique({
+        where: { slug },
+        include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+        },
+      });
+    }
+
+    // If not found by slug, try by ID as fallback
+    if (!product && !isCuid) {
+      product = await prisma.product.findUnique({
+        where: { id: slug },
+        include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+        },
+      });
+    }
 
     if (!product) {
       return NextResponse.json(
