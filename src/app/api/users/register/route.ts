@@ -91,22 +91,24 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    if (error?.code === "P1013") {
+      return NextResponse.json(
+        { error: "Database connection string is invalid. Please check DATABASE_URL in Vercel environment variables." },
+        { status: 500 }
+      );
+    }
     
-    // Return error with details in development
-    const errorMessage = process.env.NODE_ENV === "development" 
-      ? error?.message || "Unknown error"
-      : "เกิดข้อผิดพลาดในการสมัครสมาชิก";
-    
+    // Return error with details (always show in production for debugging)
     return NextResponse.json(
       { 
-        error: errorMessage,
-        ...(process.env.NODE_ENV === "development" && {
-          details: {
-            code: error?.code,
-            name: error?.name,
-            meta: error?.meta,
-          }
-        })
+        error: "เกิดข้อผิดพลาดในการสมัครสมาชิก",
+        details: {
+          code: error?.code,
+          name: error?.name,
+          message: error?.message,
+          ...(error?.meta && { meta: error.meta }),
+        }
       },
       { status: 500 }
     );
