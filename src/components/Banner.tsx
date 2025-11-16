@@ -4,12 +4,12 @@ import { Search } from "lucide-react";
 
 export default function Banner() {
   return (
-    <div className="relative w-full h-[500px] md:h-[600px] overflow-hidden bg-gray-200">
+    <div className="relative w-full h-[450px] overflow-hidden bg-gray-200">
       {/* Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center"
         style={{
-          backgroundImage: "url(https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1920)",
+          backgroundImage: "url(/banner/banner-header.png)",
         }}
       >
         <div className="absolute inset-0 bg-black/40"></div>

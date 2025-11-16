@@ -4,17 +4,17 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-br from-gray-50 via-green-50/30 to-emerald-50/30 border-t border-green-100 py-12">
+    <footer className="bg-gradient-to-br from-green-600 via-emerald-600 to-green-500 border-t border-green-400/30 py-12">
       <div className="container-custom">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* About Column */}
           <div>
-            <h3 className="text-sm font-semibold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-4">About</h3>
+            <h3 className="text-sm font-semibold text-white mb-4">About</h3>
             <ul className="space-y-2">
               <li>
                 <Link
                   href="/blog"
-                  className="text-sm text-gray-600 hover:text-green-600 transition-colors"
+                  className="text-sm text-white/80 hover:text-white transition-colors"
                 >
                   Blog
                 </Link>
@@ -22,7 +22,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/team"
-                  className="text-sm text-gray-600 hover:text-green-600 transition-colors"
+                  className="text-sm text-white/80 hover:text-white transition-colors"
                 >
                   Meet The Team
                 </Link>
@@ -30,7 +30,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/contact"
-                  className="text-sm text-gray-600 hover:text-green-600 transition-colors"
+                  className="text-sm text-white/80 hover:text-white transition-colors"
                 >
                   Contact Us
                 </Link>
@@ -40,14 +40,14 @@ export default function Footer() {
 
           {/* Support Column */}
           <div>
-            <h3 className="text-sm font-semibold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-4">
+            <h3 className="text-sm font-semibold text-white mb-4">
               Support
             </h3>
             <ul className="space-y-2">
               <li>
                 <Link
                   href="/contact"
-                  className="text-sm text-gray-600 hover:text-green-600 transition-colors"
+                  className="text-sm text-white/80 hover:text-white transition-colors"
                 >
                   Contact Us
                 </Link>
@@ -55,7 +55,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/shipping"
-                  className="text-sm text-gray-600 hover:text-green-600 transition-colors"
+                  className="text-sm text-white/80 hover:text-white transition-colors"
                 >
                   Shipping
                 </Link>
@@ -63,7 +63,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/return"
-                  className="text-sm text-gray-600 hover:text-green-600 transition-colors"
+                  className="text-sm text-white/80 hover:text-white transition-colors"
                 >
                   Return
                 </Link>
@@ -71,7 +71,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/faq"
-                  className="text-sm text-gray-600 hover:text-green-600 transition-colors"
+                  className="text-sm text-white/80 hover:text-white transition-colors"
                 >
                   FAQ
                 </Link>
@@ -81,7 +81,7 @@ export default function Footer() {
 
           {/* Social Media */}
           <div className="flex flex-col items-start md:items-end">
-            <h3 className="text-sm font-semibold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-4">
+            <h3 className="text-sm font-semibold text-white mb-4">
               Follow Us
             </h3>
             <div className="flex gap-4">
@@ -89,7 +89,7 @@ export default function Footer() {
                 href="https://twitter.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 hover:text-green-600 transition-colors"
+                className="text-white/80 hover:text-white transition-colors"
                 aria-label="Twitter"
               >
                 <svg
@@ -104,7 +104,7 @@ export default function Footer() {
                 href="https://facebook.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 hover:text-green-600 transition-colors"
+                className="text-white/80 hover:text-white transition-colors"
                 aria-label="Facebook"
               >
                 <svg
@@ -119,7 +119,7 @@ export default function Footer() {
                 href="https://linkedin.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 hover:text-green-600 transition-colors"
+                className="text-white/80 hover:text-white transition-colors"
                 aria-label="LinkedIn"
               >
                 <svg
@@ -134,7 +134,7 @@ export default function Footer() {
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 hover:text-green-600 transition-colors"
+                className="text-white/80 hover:text-white transition-colors"
                 aria-label="Instagram"
               >
                 <svg
