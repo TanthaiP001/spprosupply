@@ -27,12 +27,12 @@ export default function Header() {
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
-            <div className="relative w-12 h-12 flex items-center justify-center bg-white rounded-lg p-2">
+            <div className="relative w-10 h-10 flex items-center justify-center bg-white rounded-lg p-0">
               <Image
                 src="/logo/logo.png"
                 alt="Spprosupply Logo"
-                width={40}
-                height={40}
+                width={55}
+                height={55}
                 className="object-contain group-hover:scale-105 transition-transform"
               />
             </div>

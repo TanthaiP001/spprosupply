@@ -83,7 +83,7 @@ export default function Recommendations() {
   }, [recommendedProducts]);
 
   const formatPrice = (price: number) => {
-    return `฿${price.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    return `฿${price.toLocaleString("th-TH", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
   };
 
   const handleAddToCart = (productId: string, e: React.MouseEvent) => {
@@ -151,7 +151,7 @@ export default function Recommendations() {
               </Link>
 
               {/* Product Info */}
-              <div className="p-5">
+              <div className="p-5 flex flex-col justify-between min-h-[140px]">
                 <Link href={`/products/${product.slug || product.id}`}>
                   <h3 className="text-base font-medium text-gray-900 mb-3 hover:text-gray-700 transition-colors cursor-pointer line-clamp-2">
                     {product.name}
@@ -159,7 +159,7 @@ export default function Recommendations() {
                 </Link>
 
                 {/* Price and Add to Cart */}
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mt-auto">
                   <div className="text-xl font-semibold text-gray-900">
                     {formatPrice(product.price)}
                   </div>

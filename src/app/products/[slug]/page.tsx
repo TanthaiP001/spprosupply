@@ -87,7 +87,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   }, [slug]);
 
   const formatPrice = (price: number) => {
-    return `฿${price.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    return `฿${price.toLocaleString("th-TH", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
   };
 
   const handleAddToCart = () => {
@@ -351,13 +351,13 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                       />
                     </div>
                   </Link>
-                  <div className="p-5">
+                  <div className="p-5 flex flex-col justify-between min-h-[100px]">
                     <Link href={`/products/${relatedProduct.slug || relatedProduct.id}`}>
                       <h3 className="text-base font-medium text-gray-900 mb-3 hover:text-gray-700 transition-colors cursor-pointer line-clamp-2">
                         {relatedProduct.name}
                       </h3>
                     </Link>
-                    <div className="text-xl font-semibold text-gray-900">
+                    <div className="text-xl font-semibold text-gray-900 mt-auto">
                       {formatPrice(relatedProduct.price)}
                     </div>
                   </div>

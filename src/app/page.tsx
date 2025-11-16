@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Header from "@/components/Header";
 import Banner from "@/components/Banner";
@@ -33,7 +33,7 @@ interface Product {
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [highlightProducts, setHighlightProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [bannerHighlight, setBannerHighlight] = useState<{
     title: string;
@@ -43,25 +43,40 @@ export default function Home() {
     buttonText?: string;
   } | null>(null);
 
-  // Filter products based on selected category
-  const filteredProducts = useMemo(() => {
-    if (selectedCategory === "all") {
-      return highlightProducts;
-    }
-    return highlightProducts.filter((product) => product.categoryId === selectedCategory);
-  }, [highlightProducts, selectedCategory]);
-
+  // Fetch products based on selected category
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchProducts = async () => {
       try {
-        // Fetch highlight products
-        const productsResponse = await fetch("/api/products/highlight");
+        setIsLoading(true);
+        let productsResponse;
+        
+        if (selectedCategory === "all") {
+          // Fetch highlight products when "all" is selected
+          productsResponse = await fetch("/api/products/highlight");
+        } else {
+          // Fetch all products in the selected category
+          productsResponse = await fetch(`/api/products?categoryId=${selectedCategory}`);
+        }
+        
         const productsData = await productsResponse.json();
         if (productsResponse.ok) {
-          setHighlightProducts(productsData.products || []);
+          setProducts(productsData.products || []);
         }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setProducts([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-        // Fetch banner
+    fetchProducts();
+  }, [selectedCategory]);
+
+  // Fetch banner only once on mount
+  useEffect(() => {
+    const fetchBanner = async () => {
+      try {
         const bannerResponse = await fetch("/api/banners");
         const bannerData = await bannerResponse.json();
         if (bannerResponse.ok && bannerData.banners && bannerData.banners.length > 0) {
@@ -78,15 +93,13 @@ export default function Home() {
           setBannerHighlight(highlightBanners[0]);
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching banner:", error);
         // Fallback to mock data on error
         setBannerHighlight(highlightBanners[0]);
-      } finally {
-        setIsLoading(false);
       }
     };
 
-    fetchData();
+    fetchBanner();
   }, []);
 
   const handleCategoryChange = (categoryId: string) => {
@@ -127,21 +140,26 @@ export default function Home() {
               <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-6">
                 {selectedCategory === "all" ? "สินค้าขายดี" : "สินค้าในหมวดหมู่"}
               </h2>
-              {isLoading ? (
-                <div className="text-center py-12">
-                  <p className="text-gray-400 font-light">กำลังโหลดข้อมูล...</p>
-                </div>
-              ) : filteredProducts.length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-gray-400 font-light">
-                    {selectedCategory === "all" 
-                      ? "ยังไม่มีสินค้า Highlight" 
-                      : "ไม่พบสินค้าในหมวดหมู่นี้"}
-                  </p>
-                </div>
-              ) : (
-                <ProductGrid productsToShow={filteredProducts} />
-              )}
+              {(() => {
+                if (isLoading) {
+                  return (
+                    <div className="text-center py-12">
+                      <p className="text-gray-400 font-light">กำลังโหลดข้อมูล...</p>
+                    </div>
+                  );
+                }
+                if (products.length === 0) {
+                  const emptyMessage = selectedCategory === "all" 
+                    ? "ยังไม่มีสินค้า Highlight" 
+                    : "ไม่พบสินค้าในหมวดหมู่นี้";
+                  return (
+                    <div className="text-center py-12">
+                      <p className="text-gray-400 font-light">{emptyMessage}</p>
+                    </div>
+                  );
+                }
+                return <ProductGrid productsToShow={products} />;
+              })()}
             </div>
 
             {/* Homepage Banners Section */}
