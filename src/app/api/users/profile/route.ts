@@ -1,20 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { applyMiddleware } from "@/lib/middleware";
+import { rateLimiters } from "@/lib/rateLimit";
 
 // GET user profile
 export async function GET(request: NextRequest) {
   try {
-    const userId = request.headers.get("x-user-id");
+    // Authentication and rate limiting
+    const { user, error } = await applyMiddleware(request, {
+      requireAuth: true,
+      rateLimit: rateLimiters.api,
+    });
 
-    if (!userId) {
+    if (error) {
+      return error;
+    }
+
+    if (!user) {
       return NextResponse.json(
         { error: "ไม่พบข้อมูลผู้ใช้" },
         { status: 401 }
       );
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
+    const userData = await prisma.user.findUnique({
+      where: { id: user.userId },
       select: {
         id: true,
         email: true,
@@ -31,14 +41,14 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    if (!user) {
+    if (!userData) {
       return NextResponse.json(
         { error: "ไม่พบข้อมูลผู้ใช้" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ user }, { status: 200 });
+    return NextResponse.json({ user: userData }, { status: 200 });
   } catch (error) {
     console.error("Get profile error:", error);
     return NextResponse.json(
@@ -51,9 +61,18 @@ export async function GET(request: NextRequest) {
 // UPDATE user profile
 export async function PUT(request: NextRequest) {
   try {
-    const userId = request.headers.get("x-user-id");
+    // Authentication, CSRF protection, and rate limiting
+    const { user, error } = await applyMiddleware(request, {
+      requireAuth: true,
+      requireCSRF: true,
+      rateLimit: rateLimiters.api,
+    });
 
-    if (!userId) {
+    if (error) {
+      return error;
+    }
+
+    if (!user) {
       return NextResponse.json(
         { error: "ไม่พบข้อมูลผู้ใช้" },
         { status: 401 }
@@ -63,8 +82,8 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const { firstName, lastName, phone, address, district, province, postalCode } = body;
 
-    const user = await prisma.user.update({
-      where: { id: userId },
+    const userData = await prisma.user.update({
+      where: { id: user.userId },
       data: {
         ...(firstName && { firstName }),
         ...(lastName && { lastName }),
@@ -90,7 +109,7 @@ export async function PUT(request: NextRequest) {
     });
 
     return NextResponse.json(
-      { message: "อัปเดตข้อมูลสำเร็จ", user },
+      { message: "อัปเดตข้อมูลสำเร็จ", user: userData },
       { status: 200 }
     );
   } catch (error) {

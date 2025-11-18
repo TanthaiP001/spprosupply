@@ -1,9 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth";
+import { generateTokenPair } from "@/lib/jwt";
+import { setAccessTokenCookie, setRefreshTokenCookie } from "@/lib/cookies";
+import { rateLimiters } from "@/lib/rateLimit";
+import { csrfProtection, generateAndSetCSRFToken } from "@/lib/csrf";
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting
+    const rateLimitResponse = await rateLimiters.auth(request);
+    if (rateLimitResponse) {
+      return rateLimitResponse;
+    }
+
+    // CSRF protection
+    const csrfResponse = await csrfProtection(request);
+    if (csrfResponse) {
+      return csrfResponse;
+    }
     // Check database connection
     if (!process.env.DATABASE_URL) {
       console.error("DATABASE_URL is not set");
@@ -63,8 +78,26 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Generate JWT tokens
+    const tokens = generateTokenPair({
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
+    // Set tokens in httpOnly cookies
+    await setAccessTokenCookie(tokens.accessToken);
+    await setRefreshTokenCookie(tokens.refreshToken);
+
+    // Generate and set CSRF token
+    const csrfToken = await generateAndSetCSRFToken();
+
     return NextResponse.json(
-      { message: "สมัครสมาชิกสำเร็จ", user },
+      { 
+        message: "สมัครสมาชิกสำเร็จ", 
+        user,
+        csrfToken, // Client needs this for subsequent requests
+      },
       { status: 201 }
     );
   } catch (error: any) {
