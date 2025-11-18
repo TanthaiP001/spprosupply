@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Header from "@/components/Header";
 import Banner from "@/components/Banner";
@@ -11,6 +11,8 @@ import Recommendations from "@/components/Recommendations";
 import Footer from "@/components/Footer";
 import RightNavbar from "@/components/RightNavbar";
 import { highlightBanners } from "@/data/mockData";
+import { useProducts, useHighlightProducts } from "@/hooks/useProducts";
+import { useBanners } from "@/hooks/useBanners";
 
 interface Product {
   id: string;
@@ -33,74 +35,30 @@ interface Product {
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [bannerHighlight, setBannerHighlight] = useState<{
-    title: string;
-    description: string;
-    image: string;
-    link: string;
-    buttonText?: string;
-  } | null>(null);
+  
+  // Use SWR hooks for data fetching with caching
+  const { products: highlightProducts, isLoading: isLoadingHighlight } = useHighlightProducts();
+  const { products: categoryProducts, isLoading: isLoadingCategory } = useProducts(
+    selectedCategory !== "all" ? selectedCategory : undefined
+  );
+  const { banners, isLoading: isLoadingBanner } = useBanners();
 
-  // Fetch products based on selected category
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setIsLoading(true);
-        let productsResponse;
-        
-        if (selectedCategory === "all") {
-          // Fetch highlight products when "all" is selected
-          productsResponse = await fetch("/api/products/highlight");
-        } else {
-          // Fetch all products in the selected category
-          productsResponse = await fetch(`/api/products?categoryId=${selectedCategory}`);
-        }
-        
-        const productsData = await productsResponse.json();
-        if (productsResponse.ok) {
-          setProducts(productsData.products || []);
-        }
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        setProducts([]);
-      } finally {
-        setIsLoading(false);
+  // Determine which products to show and loading state
+  const products = selectedCategory === "all" ? highlightProducts : categoryProducts;
+  const isLoading = selectedCategory === "all" ? isLoadingHighlight : isLoadingCategory;
+
+  // Get banner data
+  const bannerHighlight = banners.length > 0
+    ? {
+        title: banners[0].title,
+        description: banners[0].description,
+        image: banners[0].image,
+        link: banners[0].link,
+        buttonText: banners[0].buttonText || "ดูเพิ่มเติม",
       }
-    };
-
-    fetchProducts();
-  }, [selectedCategory]);
-
-  // Fetch banner only once on mount
-  useEffect(() => {
-    const fetchBanner = async () => {
-      try {
-        const bannerResponse = await fetch("/api/banners");
-        const bannerData = await bannerResponse.json();
-        if (bannerResponse.ok && bannerData.banners && bannerData.banners.length > 0) {
-          const banner = bannerData.banners[0];
-          setBannerHighlight({
-            title: banner.title,
-            description: banner.description,
-            image: banner.image,
-            link: banner.link,
-            buttonText: banner.buttonText || "ดูเพิ่มเติม",
-          });
-        } else {
-          // Fallback to mock data if no banner in database
-          setBannerHighlight(highlightBanners[0]);
-        }
-      } catch (error) {
-        console.error("Error fetching banner:", error);
-        // Fallback to mock data on error
-        setBannerHighlight(highlightBanners[0]);
-      }
-    };
-
-    fetchBanner();
-  }, []);
+    : isLoadingBanner
+    ? null
+    : highlightBanners[0];
 
   const handleCategoryChange = (categoryId: string) => {
     setSelectedCategory(categoryId);

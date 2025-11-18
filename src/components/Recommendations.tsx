@@ -5,6 +5,7 @@ import { ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/contexts/CartContext";
+import { useRecommendedProducts } from "@/hooks/useProducts";
 
 interface Product {
   id: string;
@@ -29,9 +30,10 @@ export default function Recommendations() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
-  const [recommendedProducts, setRecommendedProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const { addToCart } = useCart();
+  
+  // Use SWR hook for recommendations with caching
+  const { products: recommendedProducts, isLoading } = useRecommendedProducts();
 
   const checkScroll = () => {
     if (scrollRef.current) {
@@ -53,24 +55,6 @@ export default function Recommendations() {
       });
     }
   };
-
-  useEffect(() => {
-    const fetchRecommendations = async () => {
-      try {
-        const response = await fetch("/api/products/recommendations");
-        const data = await response.json();
-        if (response.ok) {
-          setRecommendedProducts(data.products || []);
-        }
-      } catch (error) {
-        console.error("Error fetching recommendations:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchRecommendations();
-  }, []);
 
   useEffect(() => {
     // Check scroll after products load

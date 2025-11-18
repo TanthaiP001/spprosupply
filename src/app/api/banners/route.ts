@@ -15,7 +15,12 @@ export async function GET(request: NextRequest) {
       take: 1, // Get first active banner
     });
 
-    return NextResponse.json({ banners }, { status: 200 });
+    return NextResponse.json({ banners }, { 
+      status: 200,
+      headers: {
+        'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=600',
+      },
+    });
   } catch (error) {
     console.error("Get banners error:", error);
     return NextResponse.json(

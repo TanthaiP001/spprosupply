@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -8,6 +8,8 @@ import RightNavbar from "@/components/RightNavbar";
 import ProductGrid from "@/components/ProductGrid";
 import CategorySidebar from "@/components/CategorySidebar";
 import Pagination from "@/components/Pagination";
+import { useProducts } from "@/hooks/useProducts";
+import { useCategories } from "@/hooks/useCategories";
 
 interface Product {
   id: string;
@@ -44,39 +46,12 @@ function ProductsContent() {
   
   const [selectedCategory, setSelectedCategory] = useState(categoryParam);
   const [currentPage, setCurrentPage] = useState(pageParam);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch products and categories
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        
-        // Fetch products based on category
-        const categoryQuery = selectedCategory !== "all" ? `?categoryId=${selectedCategory}` : "";
-        const productsResponse = await fetch(`/api/products${categoryQuery}`);
-        const productsData = await productsResponse.json();
-        if (productsResponse.ok) {
-          setProducts(productsData.products || []);
-        }
-
-        // Fetch categories for category name display
-        const categoriesResponse = await fetch("/api/categories");
-        const categoriesData = await categoriesResponse.json();
-        if (categoriesResponse.ok) {
-          setCategories(categoriesData.categories || []);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [selectedCategory]);
+  // Use SWR hooks for data fetching with caching
+  const { products, isLoading } = useProducts(
+    selectedCategory !== "all" ? selectedCategory : undefined
+  );
+  const { categories } = useCategories();
 
   // Calculate pagination
   const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);

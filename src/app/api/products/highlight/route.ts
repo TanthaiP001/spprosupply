@@ -23,7 +23,12 @@ export async function GET(request: NextRequest) {
       take: 9, // Limit to 9 products
     });
 
-    return NextResponse.json({ products }, { status: 200 });
+    return NextResponse.json({ products }, { 
+      status: 200,
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+      },
+    });
   } catch (error) {
     console.error("Get highlight products error:", error);
     return NextResponse.json(
