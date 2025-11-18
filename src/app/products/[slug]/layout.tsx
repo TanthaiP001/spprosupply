@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         'ซื้อของออนไลน์',
       ],
       openGraph: {
-        type: 'product',
+        type: 'website',
         title: product.name,
         description: description,
         url: productUrl,
