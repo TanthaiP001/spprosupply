@@ -7,9 +7,12 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import RightNavbar from "@/components/RightNavbar";
 import { useCart } from "@/contexts/CartContext";
+import ProductStructuredData from "@/components/ProductStructuredData";
 import { Star, ShoppingCart, ArrowLeft, Check, Truck, Shield, RotateCcw } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://spprosupply.com';
 
 interface Product {
   id: string;
@@ -142,6 +145,9 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   return (
     <div className="min-h-screen bg-white">
+      {product && (
+        <ProductStructuredData product={product} siteUrl={siteUrl} />
+      )}
       <Header />
       <RightNavbar />
 
