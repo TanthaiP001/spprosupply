@@ -18,7 +18,7 @@ export default memo(function BannerHighlight({
   return (
     <Link
       href={link}
-      className="group relative block w-full h-64 md:h-80 rounded-lg overflow-hidden mb-6 hover:shadow-xl transition-shadow"
+      className="group relative block w-full h-44 md:h-52 rounded-lg overflow-hidden mb-6 hover:shadow-xl transition-shadow"
     >
       <div className="relative w-full h-full">
         <Image
@@ -29,12 +29,12 @@ export default memo(function BannerHighlight({
           className="object-cover group-hover:scale-105 transition-transform duration-300"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent"></div>
-        <div className="absolute inset-0 flex items-center p-6 md:p-10">
-          <div className="text-white max-w-md">
-            <h2 className="text-2xl md:text-4xl font-bold mb-3 drop-shadow-lg">
+        <div className="absolute inset-0 flex items-center p-4 md:p-6">
+          <div className="text-white max-w-sm">
+            <h2 className="text-xl md:text-2xl font-bold mb-1.5 drop-shadow-lg">
               {title}
             </h2>
-            <p className="text-base md:text-lg mb-4 drop-shadow-md opacity-90">
+            <p className="text-sm md:text-base mb-2 drop-shadow-md opacity-90">
               {description}
             </p>
           </div>

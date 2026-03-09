@@ -76,15 +76,16 @@ export default function Recommendations() {
             <p className="text-gray-400 font-light">ยังไม่มีสินค้าแนะนำ</p>
           </div>
         ) : (
-          <Swiper
-            onSwiper={(swiper) => { swiperRef.current = swiper; }}
-            modules={[Navigation, FreeMode]}
-            freeMode={{ enabled: true, sticky: true }}
-            spaceBetween={24}
-            slidesPerView="auto"
-            grabCursor
-            className="!overflow-visible"
-          >
+          <div className="overflow-hidden">
+            <Swiper
+              onSwiper={(swiper) => { swiperRef.current = swiper; }}
+              modules={[Navigation, FreeMode]}
+              freeMode={{ enabled: true, sticky: true }}
+              spaceBetween={24}
+              slidesPerView="auto"
+              grabCursor
+              className="!overflow-hidden"
+            >
             {displayProducts.map((product) => (
               <SwiperSlide key={product.id} className="!w-64">
                 <div className="bg-white rounded-lg overflow-hidden group border border-gray-100 h-full">
@@ -125,6 +126,7 @@ export default function Recommendations() {
               </SwiperSlide>
             ))}
           </Swiper>
+          </div>
         )}
       </div>
     </div>
