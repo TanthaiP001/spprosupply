@@ -2,14 +2,40 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import Header from "@/components/Header";
 import Banner from "@/components/Banner";
 import Sidebar from "@/components/Sidebar";
 import ProductGrid from "@/components/ProductGrid";
 import BannerHighlight from "@/components/BannerHighlight";
-import Recommendations from "@/components/Recommendations";
-import Footer from "@/components/Footer";
 import RightNavbar from "@/components/RightNavbar";
+
+const Recommendations = dynamic(() => import("@/components/Recommendations"), {
+  loading: () => (
+    <div className="py-12 bg-white">
+      <div className="container-custom animate-pulse">
+        <div className="h-7 bg-gray-200 rounded w-56 mb-6" />
+        <div className="flex gap-6 overflow-hidden">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="flex-shrink-0 w-64 rounded-lg border border-gray-100">
+              <div className="h-48 bg-gray-200" />
+              <div className="p-5 space-y-3">
+                <div className="h-4 bg-gray-200 rounded w-full" />
+                <div className="h-4 bg-gray-200 rounded w-2/3" />
+                <div className="flex justify-between mt-4">
+                  <div className="h-6 bg-gray-200 rounded w-16" />
+                  <div className="h-9 bg-gray-200 rounded w-28" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  ),
+});
+
+const Footer = dynamic(() => import("@/components/Footer"));
 import { highlightBanners } from "@/data/mockData";
 import { useProducts, useHighlightProducts } from "@/hooks/useProducts";
 import { useBanners } from "@/hooks/useBanners";
@@ -154,62 +180,28 @@ export default function Home() {
             </div>
 
             {/* Homepage Banners Section */}
-            <div className="mt-12 -mx-6 md:-mx-0">
+            <div className="mt-12 -mx-6 md:-mx-0 content-auto">
               <div className="grid grid-cols-1 gap-4">
-                <div className="relative w-full rounded-lg overflow-hidden hover:shadow-lg transition-shadow group">
-                  <Image
-                    src="/homepage-banner/1411394429.gif"
-                    alt="Homepage Banner"
-                    width={1200}
-                    height={400}
-                    className="w-full h-auto group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="relative w-full rounded-lg overflow-hidden hover:shadow-lg transition-shadow group">
-                  <Image
-                    src="/homepage-banner/1622742199.gif"
-                    alt="Homepage Banner"
-                    width={1200}
-                    height={400}
-                    className="w-full h-auto group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="relative w-full rounded-lg overflow-hidden hover:shadow-lg transition-shadow group">
-                  <Image
-                    src="/homepage-banner/1945558495.jpg"
-                    alt="Homepage Banner"
-                    width={1200}
-                    height={400}
-                    className="w-full h-auto group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="relative w-full rounded-lg overflow-hidden hover:shadow-lg transition-shadow group">
-                  <Image
-                    src="/homepage-banner/210884266.gif"
-                    alt="Homepage Banner"
-                    width={1200}
-                    height={400}
-                    className="w-full h-auto group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="relative w-full rounded-lg overflow-hidden hover:shadow-lg transition-shadow group">
-                  <Image
-                    src="/homepage-banner/565772067.gif"
-                    alt="Homepage Banner"
-                    width={1200}
-                    height={400}
-                    className="w-full h-auto group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="relative w-full rounded-lg overflow-hidden hover:shadow-lg transition-shadow group">
-                  <Image
-                    src="/homepage-banner/597570734.jpg"
-                    alt="Homepage Banner"
-                    width={1200}
-                    height={400}
-                    className="w-full h-auto group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
+                {[
+                  { src: "/homepage-banner/1411394429.gif", gif: true },
+                  { src: "/homepage-banner/1622742199.gif", gif: true },
+                  { src: "/homepage-banner/1945558495.jpg", gif: false },
+                  { src: "/homepage-banner/210884266.gif", gif: true },
+                  { src: "/homepage-banner/565772067.gif", gif: true },
+                  { src: "/homepage-banner/597570734.jpg", gif: false },
+                ].map((banner) => (
+                  <div key={banner.src} className="relative w-full rounded-lg overflow-hidden">
+                    <Image
+                      src={banner.src}
+                      alt="Homepage Banner"
+                      width={1200}
+                      height={400}
+                      loading="lazy"
+                      unoptimized={banner.gif}
+                      className="w-full h-auto"
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </main>

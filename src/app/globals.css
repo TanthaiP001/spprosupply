@@ -64,3 +64,9 @@ body {
     padding-right: 1.5rem;
   }
 }
+
+/* Skip rendering off-screen sections until scrolled into view */
+.content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}

@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+const Footer = dynamic(() => import("@/components/Footer"));
 import RightNavbar from "@/components/RightNavbar";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";

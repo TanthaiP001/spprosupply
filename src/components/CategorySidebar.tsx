@@ -1,12 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-
-interface Category {
-  id: string;
-  name: string;
-  slug: string;
-}
+import { useCategories } from "@/hooks/useCategories";
 
 interface CategorySidebarProps {
   selectedCategory: string;
@@ -17,26 +11,7 @@ export default function CategorySidebar({
   selectedCategory,
   onCategoryChange,
 }: CategorySidebarProps) {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch("/api/categories");
-        const data = await response.json();
-        if (response.ok) {
-          setCategories(data.categories || []);
-        }
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchCategories();
-  }, []);
+  const { categories, isLoading } = useCategories();
 
   return (
     <aside className="w-full md:w-64 bg-white border-r border-gray-100 p-8">

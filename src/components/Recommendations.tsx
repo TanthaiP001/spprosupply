@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -35,13 +35,18 @@ export default function Recommendations() {
   // Use SWR hook for recommendations with caching
   const { products: recommendedProducts, isLoading } = useRecommendedProducts();
 
-  const checkScroll = () => {
-    if (scrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-      setCanScrollLeft(scrollLeft > 0);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-    }
-  };
+  const scrollRaf = useRef<number>(0);
+  const checkScroll = useCallback(() => {
+    if (scrollRaf.current) return;
+    scrollRaf.current = requestAnimationFrame(() => {
+      if (scrollRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+        setCanScrollLeft(scrollLeft > 0);
+        setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+      }
+      scrollRaf.current = 0;
+    });
+  }, []);
 
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
@@ -77,7 +82,7 @@ export default function Recommendations() {
   };
 
   return (
-    <div className="py-12 bg-white">
+    <div className="py-12 bg-white content-auto">
       <div className="container-custom">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -115,12 +120,13 @@ export default function Recommendations() {
           <div
             ref={scrollRef}
             onScroll={checkScroll}
-            className="flex gap-6 overflow-x-auto scrollbar-hide pb-4"
+            className="flex gap-6 overflow-x-auto scrollbar-hide pb-4 scroll-smooth snap-x snap-mandatory"
+            style={{ contain: "layout style" }}
           >
             {recommendedProducts.map((product) => (
             <div
               key={product.id}
-              className="flex-shrink-0 w-64 bg-white rounded-lg overflow-hidden hover:shadow-md transition-shadow group border border-gray-100"
+              className="flex-shrink-0 w-64 bg-white rounded-lg overflow-hidden group border border-gray-100 snap-start will-change-transform"
             >
               {/* Product Image */}
               <Link href={`/products/${product.slug || product.id}`}>
@@ -129,6 +135,8 @@ export default function Recommendations() {
                     src={product.image}
                     alt={product.name}
                     fill
+                    sizes="256px"
+                    loading="lazy"
                     className="object-contain group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>

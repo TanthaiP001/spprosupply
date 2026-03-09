@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+const Footer = dynamic(() => import("@/components/Footer"));
 import RightNavbar from "@/components/RightNavbar";
 import { Search, Package, CheckCircle, XCircle, Truck, Clock, MapPin, Phone, Mail } from "lucide-react";
 import Image from "next/image";

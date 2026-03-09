@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -28,7 +29,7 @@ interface ProductGridProps {
   productsToShow: Product[];
 }
 
-export default function ProductGrid({ productsToShow }: ProductGridProps) {
+export default memo(function ProductGrid({ productsToShow }: ProductGridProps) {
   const { addToCart } = useCart();
 
   const formatPrice = (price: number) => {
@@ -47,7 +48,7 @@ export default function ProductGrid({ productsToShow }: ProductGridProps) {
       {productsToShow.map((product) => (
         <div
           key={product.id}
-          className="bg-white rounded-lg overflow-hidden hover:shadow-md transition-shadow group"
+          className="bg-white rounded-lg overflow-hidden hover:border-gray-300 transition-colors group"
         >
           {/* Product Image - Clickable */}
           <Link href={`/products/${product.slug || product.id}`}>
@@ -56,6 +57,7 @@ export default function ProductGrid({ productsToShow }: ProductGridProps) {
                 src={product.image}
                 alt={product.name}
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className="object-contain group-hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -87,5 +89,5 @@ export default function ProductGrid({ productsToShow }: ProductGridProps) {
       ))}
     </div>
   );
-}
+})
 

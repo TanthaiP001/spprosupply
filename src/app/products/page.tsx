@@ -2,12 +2,14 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import RightNavbar from "@/components/RightNavbar";
 import ProductGrid from "@/components/ProductGrid";
 import CategorySidebar from "@/components/CategorySidebar";
-import Pagination from "@/components/Pagination";
+
+const Pagination = dynamic(() => import("@/components/Pagination"));
+const Footer = dynamic(() => import("@/components/Footer"));
 import { useProducts } from "@/hooks/useProducts";
 import { useCategories } from "@/hooks/useCategories";
 

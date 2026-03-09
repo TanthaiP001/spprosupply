@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+const Footer = dynamic(() => import("@/components/Footer"));
 import RightNavbar from "@/components/RightNavbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { ArrowLeft, User as UserIcon, Search, X, Eye, Mail, Phone, MapPin, Calendar } from "lucide-react";

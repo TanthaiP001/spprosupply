@@ -1,16 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { ChevronDown, ChevronUp, X } from "lucide-react";
+import { useState, useCallback } from "react";
 import MemberLogin from "./MemberLogin";
 import DownloadSection from "./DownloadSection";
 import WebsiteStats from "./WebsiteStats";
-
-interface Category {
-  id: string;
-  name: string;
-  slug: string;
-}
+import { useCategories } from "@/hooks/useCategories";
 
 interface SidebarProps {
   selectedCategory?: string;
@@ -19,49 +13,17 @@ interface SidebarProps {
 
 export default function Sidebar({ selectedCategory: externalSelectedCategory, onCategoryChange }: SidebarProps = {} as SidebarProps) {
   const [internalSelectedCategory, setInternalSelectedCategory] = useState("all");
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [expandedFilters, setExpandedFilters] = useState({
-    newArrival: false,
-    bestSeller: false,
-    onDiscount: false,
-  });
+  const { categories, isLoading } = useCategories();
 
-  // Use external selectedCategory if provided, otherwise use internal state
-  const selectedCategory = externalSelectedCategory !== undefined ? externalSelectedCategory : internalSelectedCategory;
+  const selectedCategory = externalSelectedCategory ?? internalSelectedCategory;
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch("/api/categories");
-        const data = await response.json();
-        if (response.ok) {
-          setCategories(data.categories || []);
-        }
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchCategories();
-  }, []);
-
-  const handleCategoryChange = (categoryId: string) => {
+  const handleCategoryChange = useCallback((categoryId: string) => {
     if (onCategoryChange) {
       onCategoryChange(categoryId);
     } else {
       setInternalSelectedCategory(categoryId);
     }
-  };
-
-  const toggleFilter = (filter: keyof typeof expandedFilters) => {
-    setExpandedFilters((prev) => ({
-      ...prev,
-      [filter]: !prev[filter],
-    }));
-  };
+  }, [onCategoryChange]);
 
   return (
     <aside className="w-full md:w-64 bg-gradient-to-b from-white to-gray-50/40 border-r border-gray-200 p-8">

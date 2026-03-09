@@ -1,5 +1,4 @@
-"use client";
-
+import { memo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -10,7 +9,7 @@ interface BannerHighlightProps {
   link: string;
 }
 
-export default function BannerHighlight({
+export default memo(function BannerHighlight({
   title,
   description,
   image,
@@ -26,6 +25,7 @@ export default function BannerHighlight({
           src={image}
           alt={title}
           fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1240px) 75vw, 900px"
           className="object-cover group-hover:scale-105 transition-transform duration-300"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent"></div>
@@ -42,5 +42,5 @@ export default function BannerHighlight({
       </div>
     </Link>
   );
-}
+})
 

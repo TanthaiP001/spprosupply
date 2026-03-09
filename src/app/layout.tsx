@@ -17,7 +17,7 @@ const inter = Inter({
 const notoSansThai = Noto_Sans_Thai({
   variable: "--font-noto-sans-thai",
   subsets: ["thai"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -107,12 +107,8 @@ export default function RootLayout({
   return (
     <html lang="th">
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+Thai:wght@100..900&family=Outfit&display=swap"
-          rel="stylesheet"
-        />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+        <link rel="dns-prefetch" href="https://fastly.picsum.photos" />
       </head>
       <body
         className={`${inter.variable} ${notoSansThai.variable} ${outfit.variable} antialiased`}

@@ -3,9 +3,11 @@
 import { useState, useEffect } from "react";
 import { use } from "react";
 import { notFound, useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import RightNavbar from "@/components/RightNavbar";
+
+const Footer = dynamic(() => import("@/components/Footer"));
 import { useCart } from "@/contexts/CartContext";
 import ProductStructuredData from "@/components/ProductStructuredData";
 import { Star, ShoppingCart, ArrowLeft, Check, Truck, Shield, RotateCcw } from "lucide-react";

@@ -3,38 +3,27 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import RightNavbar from "@/components/RightNavbar";
 import { useAuth } from "@/contexts/AuthContext";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  ArcElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-} from "chart.js";
-import { Line, Bar, Doughnut } from "react-chartjs-2";
-import { Package, Folder, Users, ArrowLeft, Shield, Image as ImageIcon, ShoppingCart, TrendingUp, Eye } from "lucide-react";
+import { Package, Folder, Users, ArrowLeft, Shield, Image as ImageIcon, ShoppingCart, TrendingUp } from "lucide-react";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  ArcElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-);
+const AdminCharts = dynamic(() => import("@/components/AdminCharts"), {
+  ssr: false,
+  loading: () => (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <div key={i} className="bg-white border border-gray-200 rounded-lg p-6 animate-pulse">
+          <div className="h-5 bg-gray-200 rounded w-48 mb-6" />
+          <div className="h-52 bg-gray-100 rounded" />
+        </div>
+      ))}
+    </div>
+  ),
+});
+
+const Footer = dynamic(() => import("@/components/Footer"));
 
 interface Statistics {
   totalProducts: number;
@@ -196,276 +185,8 @@ export default function AdminPage() {
               </div>
             </div>
 
-            {/* Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Visitor Chart */}
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
-                <div className="flex items-center gap-2 mb-6">
-                  <Eye className="w-5 h-5 text-gray-400" />
-                  <h3 className="text-base font-light text-gray-900">ยอดผู้เข้าชม (7 วันล่าสุด)</h3>
-                </div>
-                {statistics.visitorData.length > 0 && (
-                  <Line
-                    data={{
-                      labels: statistics.visitorData.map((d) => d.date),
-                      datasets: [
-                        {
-                          label: "ผู้เข้าชม",
-                          data: statistics.visitorData.map((d) => d.visitors),
-                          borderColor: "rgb(0, 0, 0)",
-                          backgroundColor: "rgba(0, 0, 0, 0.05)",
-                          tension: 0.4,
-                          fill: true,
-                        },
-                      ],
-                    }}
-                    options={{
-                      responsive: true,
-                      maintainAspectRatio: true,
-                      plugins: {
-                        legend: {
-                          display: false,
-                        },
-                        tooltip: {
-                          backgroundColor: "rgba(0, 0, 0, 0.8)",
-                          padding: 12,
-                          titleFont: {
-                            size: 12,
-                            weight: "normal",
-                          },
-                          bodyFont: {
-                            size: 12,
-                          },
-                        },
-                      },
-                      scales: {
-                        y: {
-                          beginAtZero: true,
-                          grid: {
-                            color: "rgba(0, 0, 0, 0.05)",
-                          },
-                          ticks: {
-                            font: {
-                              size: 11,
-                            },
-                          },
-                        },
-                        x: {
-                          grid: {
-                            display: false,
-                          },
-                          ticks: {
-                            font: {
-                              size: 11,
-                            },
-                          },
-                        },
-                      },
-                    }}
-                  />
-                )}
-              </div>
-
-              {/* Sales Chart */}
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
-                <div className="flex items-center gap-2 mb-6">
-                  <TrendingUp className="w-5 h-5 text-gray-400" />
-                  <h3 className="text-base font-light text-gray-900">ยอดขาย (7 วันล่าสุด)</h3>
-                </div>
-                {statistics.salesByDate.length > 0 && (
-                  <Bar
-                    data={{
-                      labels: statistics.salesByDate.map((d) => d.date),
-                      datasets: [
-                        {
-                          label: "ยอดขาย",
-                          data: statistics.salesByDate.map((d) => d.sales),
-                          backgroundColor: "rgba(0, 0, 0, 0.8)",
-                          borderRadius: 4,
-                        },
-                      ],
-                    }}
-                    options={{
-                      responsive: true,
-                      maintainAspectRatio: true,
-                      plugins: {
-                        legend: {
-                          display: false,
-                        },
-                        tooltip: {
-                          backgroundColor: "rgba(0, 0, 0, 0.8)",
-                          padding: 12,
-                          callbacks: {
-                            label: function (context) {
-                              return `ยอดขาย: ${formatPrice(context.parsed.y ?? 0)}`;
-                            },
-                          },
-                          titleFont: {
-                            size: 12,
-                            weight: "normal",
-                          },
-                          bodyFont: {
-                            size: 12,
-                          },
-                        },
-                      },
-                      scales: {
-                        y: {
-                          beginAtZero: true,
-                          grid: {
-                            color: "rgba(0, 0, 0, 0.05)",
-                          },
-                          ticks: {
-                            font: {
-                              size: 11,
-                            },
-                            callback: function (value) {
-                              return `฿${Number(value).toLocaleString()}`;
-                            },
-                          },
-                        },
-                        x: {
-                          grid: {
-                            display: false,
-                          },
-                          ticks: {
-                            font: {
-                              size: 11,
-                            },
-                          },
-                        },
-                      },
-                    }}
-                  />
-                )}
-              </div>
-
-              {/* Products by Category */}
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
-                <div className="flex items-center gap-2 mb-6">
-                  <Package className="w-5 h-5 text-gray-400" />
-                  <h3 className="text-base font-light text-gray-900">จำนวนสินค้าตามหมวดหมู่</h3>
-                </div>
-                {statistics.productsByCategory.length > 0 && (
-                  <Doughnut
-                    data={{
-                      labels: statistics.productsByCategory.map((c) => c.name),
-                      datasets: [
-                        {
-                          data: statistics.productsByCategory.map((c) => c.count),
-                          backgroundColor: [
-                            "rgba(59, 130, 246, 0.8)", // blue
-                            "rgba(34, 197, 94, 0.8)", // green
-                            "rgba(168, 85, 247, 0.8)", // purple
-                            "rgba(234, 179, 8, 0.8)", // yellow
-                            "rgba(239, 68, 68, 0.8)", // red
-                            "rgba(99, 102, 241, 0.8)", // indigo
-                            "rgba(236, 72, 153, 0.8)", // pink
-                            "rgba(14, 165, 233, 0.8)", // sky
-                            "rgba(251, 146, 60, 0.8)", // orange
-                            "rgba(20, 184, 166, 0.8)", // teal
-                          ],
-                          borderWidth: 0,
-                        },
-                      ],
-                    }}
-                    options={{
-                      responsive: true,
-                      maintainAspectRatio: true,
-                      plugins: {
-                        legend: {
-                          position: "bottom",
-                          labels: {
-                            padding: 15,
-                            font: {
-                              size: 11,
-                            },
-                            usePointStyle: true,
-                          },
-                        },
-                        tooltip: {
-                          backgroundColor: "rgba(0, 0, 0, 0.8)",
-                          padding: 12,
-                          titleFont: {
-                            size: 12,
-                            weight: "normal",
-                          },
-                          bodyFont: {
-                            size: 12,
-                          },
-                        },
-                      },
-                    }}
-                  />
-                )}
-              </div>
-
-              {/* Orders by Status */}
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
-                <div className="flex items-center gap-2 mb-6">
-                  <ShoppingCart className="w-5 h-5 text-gray-400" />
-                  <h3 className="text-base font-light text-gray-900">คำสั่งซื้อตามสถานะ</h3>
-                </div>
-                {statistics.ordersByStatus.length > 0 && (
-                  <Doughnut
-                    data={{
-                      labels: statistics.ordersByStatus.map((o) => {
-                        const statusMap: Record<string, string> = {
-                          pending: "รอดำเนินการ",
-                          confirmed: "ยืนยันแล้ว",
-                          processing: "กำลังจัดเตรียม",
-                          shipped: "จัดส่งแล้ว",
-                          completed: "เสร็จสมบูรณ์",
-                          cancelled: "ยกเลิก",
-                        };
-                        return statusMap[o.status] || o.status;
-                      }),
-                      datasets: [
-                        {
-                          data: statistics.ordersByStatus.map((o) => o._count.status),
-                          backgroundColor: [
-                            "rgba(234, 179, 8, 0.8)", // yellow - pending
-                            "rgba(59, 130, 246, 0.8)", // blue - confirmed
-                            "rgba(168, 85, 247, 0.8)", // purple - processing
-                            "rgba(99, 102, 241, 0.8)", // indigo - shipped
-                            "rgba(34, 197, 94, 0.8)", // green - completed
-                            "rgba(239, 68, 68, 0.8)", // red - cancelled
-                          ],
-                          borderWidth: 0,
-                        },
-                      ],
-                    }}
-                    options={{
-                      responsive: true,
-                      maintainAspectRatio: true,
-                      plugins: {
-                        legend: {
-                          position: "bottom",
-                          labels: {
-                            padding: 15,
-                            font: {
-                              size: 11,
-                            },
-                            usePointStyle: true,
-                          },
-                        },
-                        tooltip: {
-                          backgroundColor: "rgba(0, 0, 0, 0.8)",
-                          padding: 12,
-                          titleFont: {
-                            size: 12,
-                            weight: "normal",
-                          },
-                          bodyFont: {
-                            size: 12,
-                          },
-                        },
-                      },
-                    }}
-                  />
-                )}
-              </div>
-            </div>
+            {/* Charts (lazy loaded — chart.js ~150KB deferred until needed) */}
+            <AdminCharts statistics={statistics} formatPrice={formatPrice} />
           </>
         ) : null}
 
