@@ -25,7 +25,12 @@ export async function GET(request: NextRequest) {
         totalUsers,
         totalOrders,
       },
-      { status: 200 }
+      {
+        status: 200,
+        headers: {
+          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+        },
+      }
     );
   } catch (error: any) {
     console.error("Analytics error:", error);

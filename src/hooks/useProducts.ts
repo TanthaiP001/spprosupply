@@ -23,29 +23,15 @@ interface ProductsResponse {
   products: Product[];
 }
 
-const fetcher = async (url: string): Promise<ProductsResponse> => {
-  const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error('Failed to fetch products');
-  }
-  return res.json();
-};
-
-// Hook สำหรับดึง products ตาม category
 export function useProducts(categoryId?: string) {
   const url = categoryId && categoryId !== 'all' 
     ? `/api/products?categoryId=${categoryId}`
     : '/api/products';
   
-  const { data, error, isLoading, mutate } = useSWR<ProductsResponse>(
-    url,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: true,
-      dedupingInterval: 60000, // Cache for 1 minute
-    }
-  );
+  const { data, error, isLoading, mutate } = useSWR<ProductsResponse>(url, {
+    dedupingInterval: 60_000,
+    refreshInterval: 120_000,
+  });
 
   return {
     products: data?.products || [],
@@ -55,15 +41,12 @@ export function useProducts(categoryId?: string) {
   };
 }
 
-// Hook สำหรับดึง highlight products
 export function useHighlightProducts() {
   const { data, error, isLoading, mutate } = useSWR<ProductsResponse>(
     '/api/products/highlight',
-    fetcher,
     {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: true,
-      dedupingInterval: 60000, // Cache for 1 minute
+      dedupingInterval: 60_000,
+      refreshInterval: 120_000,
     }
   );
 
@@ -75,15 +58,12 @@ export function useHighlightProducts() {
   };
 }
 
-// Hook สำหรับดึง recommended products
 export function useRecommendedProducts() {
   const { data, error, isLoading, mutate } = useSWR<ProductsResponse>(
     '/api/products/recommendations',
-    fetcher,
     {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: true,
-      dedupingInterval: 60000, // Cache for 1 minute
+      dedupingInterval: 60_000,
+      refreshInterval: 120_000,
     }
   );
 

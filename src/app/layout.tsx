@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { Analytics } from "@vercel/analytics/next";
+import SWRProvider from "@/components/SWRProvider";
 import WebsiteStructuredData from "@/components/WebsiteStructuredData";
 import OrganizationStructuredData from "@/components/OrganizationStructuredData";
 
@@ -121,11 +122,13 @@ export default function RootLayout({
       >
         <WebsiteStructuredData />
         <OrganizationStructuredData />
-        <AuthProvider>
-          <CartProvider>
-            {children}
-          </CartProvider>
-        </AuthProvider>
+        <SWRProvider>
+          <AuthProvider>
+            <CartProvider>
+              {children}
+            </CartProvider>
+          </AuthProvider>
+        </SWRProvider>
         <Analytics />
       </body>
     </html>

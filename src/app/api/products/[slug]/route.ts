@@ -90,7 +90,12 @@ export async function GET(
 
     return NextResponse.json(
       { product, relatedProducts },
-      { status: 200 }
+      {
+        status: 200,
+        headers: {
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+        },
+      }
     );
   } catch (error) {
     console.error("Get product by slug error:", error);

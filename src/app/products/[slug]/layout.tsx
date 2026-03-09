@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
+import { cache } from 'react';
 
 interface ProductLayoutProps {
   params: Promise<{ slug: string }>;
@@ -10,21 +11,37 @@ interface ProductLayoutProps {
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://spprosupply.com';
 const siteName = 'SP Pro Supply';
 
+const getProduct = cache(async (slug: string) => {
+  return prisma.product.findUnique({
+    where: { slug },
+    include: {
+      category: {
+        select: {
+          name: true,
+          slug: true,
+        },
+      },
+    },
+  });
+});
+
+export async function generateStaticParams() {
+  const products = await prisma.product.findMany({
+    where: { slug: { not: null } },
+    select: { slug: true },
+  });
+  return products
+    .filter((p): p is { slug: string } => p.slug !== null)
+    .map((p) => ({ slug: p.slug }));
+}
+
+export const revalidate = 3600;
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   
   try {
-    const product = await prisma.product.findUnique({
-      where: { slug },
-      include: {
-        category: {
-          select: {
-            name: true,
-            slug: true,
-          },
-        },
-      },
-    });
+    const product = await getProduct(slug);
 
     if (!product) {
       return {
@@ -85,16 +102,7 @@ export default async function ProductLayout({ params, children }: ProductLayoutP
   const { slug } = await params;
   
   try {
-    const product = await prisma.product.findUnique({
-      where: { slug },
-      include: {
-        category: {
-          select: {
-            name: true,
-          },
-        },
-      },
-    });
+    const product = await getProduct(slug);
 
     if (!product) {
       notFound();
