@@ -26,14 +26,20 @@ const getProduct = cache(async (slug: string) => {
 });
 
 export async function generateStaticParams() {
-  const products = await prisma.product.findMany({
-    where: { slug: { not: null } },
-    select: { slug: true },
-  });
-  return products
-    .filter((p): p is { slug: string } => p.slug !== null)
-    .map((p) => ({ slug: p.slug }));
+  try {
+    const products = await prisma.product.findMany({
+      where: { slug: { not: null } },
+      select: { slug: true },
+    });
+    return products
+      .filter((p): p is { slug: string } => p.slug !== null)
+      .map((p) => ({ slug: p.slug }));
+  } catch {
+    return [];
+  }
 }
+
+export const dynamicParams = true;
 
 export const revalidate = 3600;
 
