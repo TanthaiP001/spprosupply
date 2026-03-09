@@ -17,7 +17,7 @@ export default function Header() {
     { label: "ตะกร้าสินค้า", href: "/cart" },
     { label: "ติดตามคำสั่งซื้อ", href: "/orders/track" },
     { label: "วิธีการชำระเงิน", href: "/payment" },
-    { label: "ติดต่อเรา", href: "/contact-us" },
+    { label: "ติดต่อเรา", href: "/contact" },
     ...(isAdmin ? [{ label: "Admin", href: "/admin" }] : []),
   ];
 

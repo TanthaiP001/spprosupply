@@ -347,7 +347,7 @@ export default function TrackOrderPage() {
                 </p>
                 <div className="flex flex-wrap gap-4">
                   <Link
-                    href="/contact-us"
+                    href="/contact"
                     className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
                   >
                     ติดต่อเรา
