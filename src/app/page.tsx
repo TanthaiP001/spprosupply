@@ -84,25 +84,58 @@ export default function Home() {
           {/* Main Content - Banner Highlight & Product Grid */}
           <main className="flex-1">
             {/* Banner Highlight */}
-            {bannerHighlight && (
-              <BannerHighlight
-                title={bannerHighlight.title}
-                description={bannerHighlight.description}
-                image={bannerHighlight.image}
-                link={bannerHighlight.link}
-              />
-            )}
+            {(() => {
+              if (isLoadingBanner && !bannerHighlight) {
+                return (
+                  <div className="relative block w-full h-64 md:h-80 rounded-lg overflow-hidden mb-6 bg-gray-200 animate-pulse">
+                    <div className="absolute inset-0 bg-gradient-to-r from-gray-300/60 via-gray-200/40 to-transparent" />
+                    <div className="absolute inset-0 flex items-center p-6 md:p-10">
+                      <div className="max-w-md w-full space-y-4">
+                        <div className="h-8 md:h-10 bg-gray-300 rounded-md w-3/4" />
+                        <div className="h-5 bg-gray-300 rounded-md w-full" />
+                        <div className="h-5 bg-gray-300 rounded-md w-2/3" />
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+              if (bannerHighlight) {
+                return (
+                  <BannerHighlight
+                    title={bannerHighlight.title}
+                    description={bannerHighlight.description}
+                    image={bannerHighlight.image}
+                    link={bannerHighlight.link}
+                  />
+                );
+              }
+              return null;
+            })()}
 
             {/* Product Highlight Section */}
             <div className="mt-8">
-              <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-6">
+              <h2 className="text-2xl md:text-3xl font-bold text-green-800 mb-6">
                 {selectedCategory === "all" ? "สินค้าขายดี" : "สินค้าในหมวดหมู่"}
               </h2>
               {(() => {
                 if (isLoading) {
                   return (
-                    <div className="text-center py-12">
-                      <p className="text-gray-400 font-light">กำลังโหลดข้อมูล...</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[30px]">
+                      {Array.from({ length: 6 }).map((_, i) => (
+                        <div key={i} className="bg-white rounded-lg overflow-hidden animate-pulse">
+                          <div className="w-full h-64 bg-gray-200 border border-gray-100" />
+                          <div className="p-5 flex flex-col justify-between min-h-[140px] border border-gray-100 space-y-3">
+                            <div className="space-y-2">
+                              <div className="h-4 bg-gray-200 rounded w-full" />
+                              <div className="h-4 bg-gray-200 rounded w-2/3" />
+                            </div>
+                            <div className="flex items-center justify-between mt-auto">
+                              <div className="h-6 bg-gray-200 rounded w-20" />
+                              <div className="h-9 bg-gray-200 rounded-md w-32" />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   );
                 }

@@ -3,13 +3,13 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --primary: #10b981;
-  --primary-dark: #059669;
-  --primary-light: #34d399;
+  --primary: #15803d;
+  --primary-dark: #166534;
+  --primary-light: #16a34a;
   --accent: #3b82f6;
   --accent-dark: #2563eb;
-  --gradient-start: #10b981;
-  --gradient-end: #059669;
+  --gradient-start: #15803d;
+  --gradient-end: #166534;
 }
 
 @theme inline {

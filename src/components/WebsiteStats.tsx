@@ -92,7 +92,7 @@ export default function WebsiteStats() {
               </div>
             </div>
             <div className="flex-shrink-0">
-              <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+              <div className="w-1.5 h-1.5 bg-green-700 rounded-full"></div>
             </div>
           </div>
         </div>

@@ -81,23 +81,23 @@ export default function Recommendations() {
       <div className="container-custom">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+          <h2 className="text-2xl font-bold text-green-800">
             สินค้าแนะนำจากทางร้าน
           </h2>
           <div className="flex gap-2">
             <button
               onClick={() => scroll("left")}
               disabled={!canScrollLeft}
-              className="p-2 border border-green-200 rounded-md hover:bg-green-50 hover:border-green-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-2 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              <ChevronLeft className="w-5 h-5 text-green-600" />
+              <ChevronLeft className="w-5 h-5 text-gray-600" />
             </button>
             <button
               onClick={() => scroll("right")}
               disabled={!canScrollRight}
-              className="p-2 border border-green-200 rounded-md hover:bg-green-50 hover:border-green-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-2 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              <ChevronRight className="w-5 h-5 text-green-600" />
+              <ChevronRight className="w-5 h-5 text-gray-600" />
             </button>
           </div>
         </div>
@@ -149,7 +149,7 @@ export default function Recommendations() {
                   </div>
                   <button
                     onClick={(e) => handleAddToCart(product.id, e)}
-                    className="bg-gradient-to-r from-green-500 to-emerald-500 text-white py-2 px-4 rounded-md hover:from-green-600 hover:to-emerald-600 transition-all text-sm font-medium flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                    className="bg-green-700 text-white py-2 px-4 rounded-md hover:bg-green-800 transition-all text-sm font-medium flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
                   >
                     <ShoppingCart className="w-4 h-4" />
                     เพิ่มลงตะกร้า

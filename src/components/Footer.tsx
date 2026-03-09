@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-br from-green-600 via-emerald-600 to-green-500 border-t border-green-400/30 py-12">
+    <footer className="bg-gradient-to-br from-green-900 via-green-800 to-green-900 border-t border-green-700/30 py-12">
       <div className="container-custom">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* About Column */}

@@ -32,10 +32,10 @@ export default function DownloadSection() {
         <h3 className="text-base font-light text-gray-900 mb-6 tracking-wide uppercase">ดาวน์โหลด</h3>
         
         <div className="space-y-2">
-          <div className="w-full flex items-center gap-4 p-3.5 border border-gray-200 hover:border-green-300 hover:bg-green-50/50 transition-all text-left group rounded-md">
+          <div className="w-full flex items-center gap-4 p-3.5 border border-gray-200 hover:border-gray-300 hover:bg-gray-50/50 transition-all text-left group rounded-md">
             <button
               onClick={(e) => handleViewImage("/assets/download/brochure1.jpg", "โบรชัวร์", e)}
-              className="flex-shrink-0 w-16 h-16 bg-gray-50 rounded-md overflow-hidden border border-gray-100 group-hover:border-green-200 transition-colors relative cursor-pointer hover:ring-2 hover:ring-green-400"
+              className="flex-shrink-0 w-16 h-16 bg-gray-50 rounded-md overflow-hidden border border-gray-100 group-hover:border-gray-300 transition-colors relative cursor-pointer hover:ring-2 hover:ring-gray-400"
             >
               <Image
                 src="/assets/download/brochure1.jpg"
@@ -54,17 +54,17 @@ export default function DownloadSection() {
             </div>
             <button
               onClick={(e) => handleDownload("brochure", e)}
-              className="p-2 hover:bg-green-100 rounded-md transition-colors"
+              className="p-2 hover:bg-gray-100 rounded-md transition-colors"
               title="ดาวน์โหลด"
             >
-              <Download className="w-3.5 h-3.5 text-gray-400 group-hover:text-green-600 flex-shrink-0 transition-colors" />
+              <Download className="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-700 flex-shrink-0 transition-colors" />
             </button>
           </div>
 
-          <div className="w-full flex items-center gap-4 p-3.5 border border-gray-200 hover:border-green-300 hover:bg-green-50/50 transition-all text-left group rounded-md">
+          <div className="w-full flex items-center gap-4 p-3.5 border border-gray-200 hover:border-gray-300 hover:bg-gray-50/50 transition-all text-left group rounded-md">
             <button
               onClick={(e) => handleViewImage("/assets/download/cert.jpg", "ใบ Certificate", e)}
-              className="flex-shrink-0 w-16 h-16 bg-gray-50 rounded-md overflow-hidden border border-gray-100 group-hover:border-green-200 transition-colors relative cursor-pointer hover:ring-2 hover:ring-green-400"
+              className="flex-shrink-0 w-16 h-16 bg-gray-50 rounded-md overflow-hidden border border-gray-100 group-hover:border-gray-300 transition-colors relative cursor-pointer hover:ring-2 hover:ring-gray-400"
             >
               <Image
                 src="/assets/download/cert.jpg"
@@ -83,10 +83,10 @@ export default function DownloadSection() {
             </div>
             <button
               onClick={(e) => handleDownload("certificate", e)}
-              className="p-2 hover:bg-green-100 rounded-md transition-colors"
+              className="p-2 hover:bg-gray-100 rounded-md transition-colors"
               title="ดาวน์โหลด"
             >
-              <Download className="w-3.5 h-3.5 text-gray-400 group-hover:text-green-600 flex-shrink-0 transition-colors" />
+              <Download className="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-700 flex-shrink-0 transition-colors" />
             </button>
           </div>
         </div>
@@ -101,7 +101,7 @@ export default function DownloadSection() {
           <div className="relative max-w-4xl max-h-[90vh] w-full">
             <button
               onClick={closeModal}
-              className="absolute -top-10 right-0 text-white hover:text-green-400 transition-colors p-2"
+              className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors p-2"
             >
               <X className="w-6 h-6" />
             </button>

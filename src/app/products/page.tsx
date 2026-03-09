@@ -145,7 +145,7 @@ function ProductsContent() {
               <div className="flex items-center justify-between">
                 <p className="text-sm font-light text-gray-400">
                   {isLoading ? (
-                    "กำลังโหลด..."
+                    <span className="inline-block h-4 w-28 bg-gray-200 rounded animate-pulse align-middle" />
                   ) : (
                     <>
                       พบสินค้า {products.length} รายการ
@@ -162,8 +162,22 @@ function ProductsContent() {
 
             {/* Product Grid */}
             {isLoading ? (
-              <div className="text-center py-16">
-                <p className="text-gray-400 text-lg font-light">กำลังโหลดข้อมูล...</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[30px]">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="bg-white rounded-lg overflow-hidden animate-pulse">
+                    <div className="w-full h-64 bg-gray-200 border border-gray-100" />
+                    <div className="p-5 flex flex-col justify-between min-h-[140px] border border-gray-100 space-y-3">
+                      <div className="space-y-2">
+                        <div className="h-4 bg-gray-200 rounded w-full" />
+                        <div className="h-4 bg-gray-200 rounded w-2/3" />
+                      </div>
+                      <div className="flex items-center justify-between mt-auto">
+                        <div className="h-6 bg-gray-200 rounded w-20" />
+                        <div className="h-9 bg-gray-200 rounded-md w-32" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : paginatedProducts.length > 0 ? (
               <>
@@ -199,9 +213,37 @@ export default function ProductsPage() {
         <div className="min-h-screen bg-white">
           <Header />
           <RightNavbar />
+          <div className="relative w-full h-48 md:h-64 overflow-hidden bg-gray-200 animate-pulse" />
           <div className="container-custom py-12">
-            <div className="text-center">
-              <p className="text-gray-400 font-light">กำลังโหลด...</p>
+            <div className="flex flex-col md:flex-row gap-8">
+              <div className="w-full md:w-64 flex-shrink-0 space-y-3 animate-pulse">
+                <div className="h-5 bg-gray-200 rounded w-24 mb-4" />
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="h-10 bg-gray-200 rounded" />
+                ))}
+              </div>
+              <main className="flex-1">
+                <div className="mb-8 animate-pulse">
+                  <div className="h-4 bg-gray-200 rounded w-32" />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[30px]">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="bg-white rounded-lg overflow-hidden animate-pulse">
+                      <div className="w-full h-64 bg-gray-200 border border-gray-100" />
+                      <div className="p-5 flex flex-col justify-between min-h-[140px] border border-gray-100 space-y-3">
+                        <div className="space-y-2">
+                          <div className="h-4 bg-gray-200 rounded w-full" />
+                          <div className="h-4 bg-gray-200 rounded w-2/3" />
+                        </div>
+                        <div className="flex items-center justify-between mt-auto">
+                          <div className="h-6 bg-gray-200 rounded w-20" />
+                          <div className="h-9 bg-gray-200 rounded-md w-32" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </main>
             </div>
           </div>
           <Footer />

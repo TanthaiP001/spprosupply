@@ -293,7 +293,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               
               {/* Success Message */}
               {showAddedMessage && (
-                <div className="absolute -top-12 left-0 right-0 bg-green-500 text-white py-2 px-4 rounded-md text-sm font-light flex items-center justify-center gap-2 transition-all duration-300 opacity-100">
+                <div className="absolute -top-12 left-0 right-0 bg-green-700 text-white py-2 px-4 rounded-md text-sm font-light flex items-center justify-center gap-2 transition-all duration-300 opacity-100">
                   <Check className="w-4 h-4" />
                   เพิ่มสินค้าลงตะกร้าเรียบร้อยแล้ว
                 </div>

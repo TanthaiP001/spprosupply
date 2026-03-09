@@ -22,7 +22,7 @@ export default function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-green-200/50 bg-gradient-to-r from-green-500 via-emerald-500 to-green-500 shadow-md">
+    <header className="sticky top-0 z-50 w-full border-b border-green-900/20 bg-gradient-to-r from-green-800 via-green-700 to-green-800 shadow-md">
       <div className="container-custom">
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
@@ -66,7 +66,7 @@ export default function Header() {
             >
               <ShoppingCart className="h-5 w-5" />
               {cartItemCount > 0 && (
-                <span className="absolute top-0 right-0 bg-white text-green-600 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
+                <span className="absolute top-0 right-0 bg-white text-green-800 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
                   {cartItemCount > 9 ? "9+" : cartItemCount}
                 </span>
               )}

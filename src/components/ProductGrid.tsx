@@ -76,7 +76,7 @@ export default function ProductGrid({ productsToShow }: ProductGridProps) {
               </div>
               <button
                 onClick={(e) => handleAddToCart(product.id, e)}
-                className="bg-gradient-to-r from-green-500 to-emerald-500 text-white py-2 px-4 rounded-md hover:from-green-600 hover:to-emerald-600 transition-all text-sm font-medium flex items-center justify-center gap-2 shadow-md hover:shadow-lg cursor-pointer"
+                className="bg-green-700 text-white py-2 px-4 rounded-md hover:bg-green-800 transition-all text-sm font-medium flex items-center justify-center gap-2 shadow-sm hover:shadow-md cursor-pointer"
               >
                 <ShoppingCart className="w-4 h-4" />
                 เพิ่มลงตะกร้า
