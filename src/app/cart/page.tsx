@@ -717,7 +717,7 @@ export default function CartPage() {
                         {copiedAccount === "account2" ? (
                           <>
                             <Check className="w-4 h-4" />
-                            คัดลอกแล้ว
+                            คัดลอกสำเร็จ
                           </>
                         ) : (
                           <>
