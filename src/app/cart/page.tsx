@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import Header from "@/components/Header";
@@ -55,17 +55,11 @@ export default function CartPage() {
   const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
   const [successOrderNumber, setSuccessOrderNumber] = useState<string | null>(null);
   const [copiedOrderNumber, setCopiedOrderNumber] = useState(false);
-  const successDialogRef = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    if (successOrderNumber && successDialogRef.current) {
-      successDialogRef.current.showModal();
-    }
-  }, [successOrderNumber]);
 
   const closeSuccessModal = () => {
     setSuccessOrderNumber(null);
     setCopiedOrderNumber(false);
+    clearCart();
     router.push("/");
   };
 
@@ -244,8 +238,13 @@ export default function CartPage() {
       const data = await response.json();
 
       if (response.ok) {
-        setSuccessOrderNumber(data.order.orderNumber);
-        clearCart();
+        const orderNum = data?.order?.orderNumber ?? data?.orderNumber ?? "";
+        if (orderNum) {
+          setSuccessOrderNumber(orderNum);
+        } else {
+          alert("สั่งซื้อสำเร็จ แต่ไม่พบหมายเลขคำสั่งซื้อใน response");
+        }
+        // ยังไม่ clearCart — จะ clear ตอนปิด modal
       } else {
         alert(data.error || "เกิดข้อผิดพลาดในการสั่งซื้อ");
       }
@@ -256,6 +255,60 @@ export default function CartPage() {
       setIsSubmitting(false);
     }
   };
+
+  if (successOrderNumber) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <RightNavbar />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <div className="text-center mb-6">
+              <div className="inline-flex w-14 h-14 rounded-full bg-green-100 items-center justify-center mb-4">
+                <Check className="w-7 h-7 text-green-600" />
+              </div>
+              <h3 className="text-xl font-light text-gray-900 mb-2">สั่งซื้อสำเร็จ!</h3>
+              <p className="text-sm font-light text-gray-600">หมายเลขคำสั่งซื้อของคุณ</p>
+            </div>
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <span className="text-2xl font-mono font-semibold text-gray-900 tracking-wider">
+                {successOrderNumber}
+              </span>
+              <button
+                type="button"
+                onClick={copyOrderNumber}
+                className="p-2 rounded-md border border-gray-200 hover:bg-gray-50 transition-colors"
+                title="คัดลอกหมายเลข"
+              >
+                {copiedOrderNumber ? (
+                  <Check className="w-5 h-5 text-green-600" />
+                ) : (
+                  <Copy className="w-5 h-5 text-gray-600" />
+                )}
+              </button>
+            </div>
+            {copiedOrderNumber && (
+              <p className="text-center text-xs text-green-600 mb-3">คัดลอกแล้ว!</p>
+            )}
+            <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-md p-3 mb-6">
+              <span className="text-amber-600 mt-0.5 flex-shrink-0">⚠️</span>
+              <p className="text-xs font-light text-amber-700">
+                กรุณาจดหรือจำหมายเลขคำสั่งซื้อนี้ไว้ เพื่อใช้ตรวจสอบสถานะหรือติดต่อร้านค้าภายหลัง
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={closeSuccessModal}
+              className="w-full bg-black text-white py-3 px-4 hover:bg-gray-800 transition-colors text-sm font-light rounded"
+            >
+              ไปหน้าหลัก
+            </button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -738,54 +791,6 @@ export default function CartPage() {
         </form>
       </div>
 
-      {/* Success Order Modal */}
-      {successOrderNumber && (
-        <dialog
-          ref={successDialogRef}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 border-0 bg-transparent [&::backdrop]:bg-black/50"
-          aria-modal="true"
-          aria-labelledby="success-modal-title"
-          onCancel={closeSuccessModal}
-          onClick={(e) => e.target === e.currentTarget && closeSuccessModal()}
-        >
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 relative" onClick={(e) => e.stopPropagation()}>
-            <div className="text-center mb-6">
-              <div className="inline-flex w-14 h-14 rounded-full bg-green-100 items-center justify-center mb-4">
-                <Check className="w-7 h-7 text-green-600" />
-              </div>
-              <h3 id="success-modal-title" className="text-xl font-light text-gray-900 mb-2">สั่งซื้อสำเร็จ</h3>
-              <p className="text-sm font-light text-gray-600">หมายเลขคำสั่งซื้อของคุณ</p>
-            </div>
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <span className="text-2xl font-mono font-semibold text-gray-900 tracking-wider">
-                {successOrderNumber}
-              </span>
-              <button
-                type="button"
-                onClick={copyOrderNumber}
-                className="flex-shrink-0 p-2 rounded-md border border-gray-200 hover:bg-gray-50 transition-colors"
-                title="คัดลอกหมายเลข"
-              >
-                {copiedOrderNumber ? (
-                  <Check className="w-5 h-5 text-green-600" />
-                ) : (
-                  <Copy className="w-5 h-5 text-gray-600" />
-                )}
-              </button>
-            </div>
-            <p className="text-xs font-light text-amber-700 bg-amber-50 border border-amber-200 rounded-md p-3 mb-6">
-              กรุณาเก็บหมายเลขคำสั่งซื้อนี้ไว้ใช้ตรวจสอบสถานะหรือติดต่อร้านค้าภายหลัง
-            </p>
-            <button
-              type="button"
-              onClick={closeSuccessModal}
-              className="w-full bg-black text-white py-3 px-4 hover:bg-gray-800 transition-colors text-sm font-light"
-            >
-              ไปหน้าหลัก
-            </button>
-          </div>
-        </dialog>
-      )}
 
       <Footer />
     </div>
