@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import Header from "@/components/Header";
@@ -50,8 +50,42 @@ export default function CartPage() {
   });
   const [paymentSlip, setPaymentSlip] = useState<File | null>(null);
   const [paymentSlipPreview, setPaymentSlipPreview] = useState<string | null>(null);
+  const [paymentSlipError, setPaymentSlipError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
+  const [successOrderNumber, setSuccessOrderNumber] = useState<string | null>(null);
+  const [copiedOrderNumber, setCopiedOrderNumber] = useState(false);
+  const successDialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    if (successOrderNumber && successDialogRef.current) {
+      successDialogRef.current.showModal();
+    }
+  }, [successOrderNumber]);
+
+  const closeSuccessModal = () => {
+    setSuccessOrderNumber(null);
+    setCopiedOrderNumber(false);
+    router.push("/");
+  };
+
+  const copyOrderNumber = async () => {
+    if (!successOrderNumber) return;
+    try {
+      await navigator.clipboard.writeText(successOrderNumber);
+      setCopiedOrderNumber(true);
+      setTimeout(() => setCopiedOrderNumber(false), 2000);
+    } catch {
+      const input = document.createElement("input");
+      input.value = successOrderNumber;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand("copy");
+      input.remove();
+      setCopiedOrderNumber(true);
+      setTimeout(() => setCopiedOrderNumber(false), 2000);
+    }
+  };
 
   const copyToClipboard = async (text: string, accountId: string) => {
     try {
@@ -121,29 +155,44 @@ export default function CartPage() {
   const shippingFee = subtotal > 1000 ? 0 : 50;
   const total = subtotal + shippingFee;
 
+  const ALLOWED_TYPES = new Set(["image/jpeg", "image/jpg", "image/png", "image/webp", "application/pdf"]);
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        alert("ไฟล์ขนาดเกิน 5MB");
-        return;
-      }
-      setPaymentSlip(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPaymentSlipPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    e.target.value = ""; // reset so same file can be re-selected
+    setPaymentSlipError(null);
+    if (!file) return;
+    if (!ALLOWED_TYPES.has(file.type)) {
+      setPaymentSlipError("กรุณาอัพโหลดเฉพาะไฟล์รูปภาพ (JPG, PNG, WebP) หรือ PDF");
+      return;
     }
+    if (file.size > MAX_FILE_SIZE) {
+      setPaymentSlipError("ไฟล์ขนาดเกิน 5MB กรุณาเลือกไฟล์ที่เล็กกว่า");
+      return;
+    }
+    setPaymentSlip(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPaymentSlipPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
   const removePaymentSlip = () => {
     setPaymentSlip(null);
     setPaymentSlipPreview(null);
+    setPaymentSlipError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setPaymentSlipError(null);
+    if (!paymentSlip) {
+      setPaymentSlipError("กรุณาอัพโหลดสลิปการโอนเงินก่อนยืนยันการสั่งซื้อ");
+      document.getElementById("payment-slip-upload")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
     setIsSubmitting(true);
 
     try {
@@ -195,9 +244,8 @@ export default function CartPage() {
       const data = await response.json();
 
       if (response.ok) {
-        alert(`สั่งซื้อสำเร็จ! หมายเลขคำสั่งซื้อ: ${data.order.orderNumber}`);
+        setSuccessOrderNumber(data.order.orderNumber);
         clearCart();
-        router.push("/");
       } else {
         alert(data.error || "เกิดข้อผิดพลาดในการสั่งซื้อ");
       }
@@ -485,32 +533,37 @@ export default function CartPage() {
               </div>
 
               {/* Payment Slip Upload */}
-              <div className="bg-white border border-gray-100 rounded-lg p-6">
+              <div id="payment-slip-upload" className="bg-white border border-gray-100 rounded-lg p-6">
                 <h2 className="text-lg font-light text-gray-900 mb-6 uppercase tracking-wider">
                   อัพโหลดสลิปการโอนเงิน *
                 </h2>
                 {!paymentSlipPreview ? (
                   <label className="block cursor-pointer">
-                    <div className="border-2 border-dashed border-gray-200 rounded-lg p-12 text-center hover:border-gray-300 transition-colors">
-                      <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                      <p className="text-sm font-light text-gray-600 mb-2">
+                    <div
+                      className={`border-2 border-dashed rounded-lg p-12 text-center transition-colors ${
+                        paymentSlipError
+                          ? "border-red-500 bg-red-50 hover:bg-red-50"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                    >
+                      <Upload className={`w-12 h-12 mx-auto mb-4 ${paymentSlipError ? "text-red-400" : "text-gray-400"}`} />
+                      <p className={`text-sm font-light mb-2 ${paymentSlipError ? "text-red-700" : "text-gray-600"}`}>
                         คลิกเพื่ออัพโหลดสลิปการโอนเงิน
                       </p>
                       <p className="text-xs font-light text-gray-400">
-                        รองรับไฟล์ JPG, PNG, PDF (ขนาดไม่เกิน 5MB)
+                        รองรับไฟล์ JPG, PNG, WebP, PDF (ขนาดไม่เกิน 5MB)
                       </p>
                     </div>
                     <input
                       type="file"
-                      required
-                      accept="image/*,.pdf"
+                      accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf"
                       onChange={handleFileChange}
                       className="hidden"
                     />
                   </label>
                 ) : (
                   <div className="relative">
-                    <div className="border border-gray-200 rounded-lg p-4 flex items-center gap-4">
+                    <div className={`rounded-lg p-4 flex items-center gap-4 border ${paymentSlipError ? "border-red-500 bg-red-50" : "border-gray-200"}`}>
                       {paymentSlipPreview && paymentSlip?.type.startsWith("image/") && (
                         <img
                           src={paymentSlipPreview}
@@ -535,6 +588,12 @@ export default function CartPage() {
                       </button>
                     </div>
                   </div>
+                )}
+                {paymentSlipError && (
+                  <p className="mt-3 text-sm text-red-600 font-light flex items-center gap-2" role="alert">
+                    <span className="inline-flex w-5 h-5 rounded-full bg-red-100 items-center justify-center text-red-600 flex-shrink-0">!</span>
+                    {paymentSlipError}
+                  </p>
                 )}
               </div>
 
@@ -678,6 +737,55 @@ export default function CartPage() {
           </div>
         </form>
       </div>
+
+      {/* Success Order Modal */}
+      {successOrderNumber && (
+        <dialog
+          ref={successDialogRef}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 border-0 bg-transparent [&::backdrop]:bg-black/50"
+          aria-modal="true"
+          aria-labelledby="success-modal-title"
+          onCancel={closeSuccessModal}
+          onClick={(e) => e.target === e.currentTarget && closeSuccessModal()}
+        >
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 relative" onClick={(e) => e.stopPropagation()}>
+            <div className="text-center mb-6">
+              <div className="inline-flex w-14 h-14 rounded-full bg-green-100 items-center justify-center mb-4">
+                <Check className="w-7 h-7 text-green-600" />
+              </div>
+              <h3 id="success-modal-title" className="text-xl font-light text-gray-900 mb-2">สั่งซื้อสำเร็จ</h3>
+              <p className="text-sm font-light text-gray-600">หมายเลขคำสั่งซื้อของคุณ</p>
+            </div>
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <span className="text-2xl font-mono font-semibold text-gray-900 tracking-wider">
+                {successOrderNumber}
+              </span>
+              <button
+                type="button"
+                onClick={copyOrderNumber}
+                className="flex-shrink-0 p-2 rounded-md border border-gray-200 hover:bg-gray-50 transition-colors"
+                title="คัดลอกหมายเลข"
+              >
+                {copiedOrderNumber ? (
+                  <Check className="w-5 h-5 text-green-600" />
+                ) : (
+                  <Copy className="w-5 h-5 text-gray-600" />
+                )}
+              </button>
+            </div>
+            <p className="text-xs font-light text-amber-700 bg-amber-50 border border-amber-200 rounded-md p-3 mb-6">
+              กรุณาเก็บหมายเลขคำสั่งซื้อนี้ไว้ใช้ตรวจสอบสถานะหรือติดต่อร้านค้าภายหลัง
+            </p>
+            <button
+              type="button"
+              onClick={closeSuccessModal}
+              className="w-full bg-black text-white py-3 px-4 hover:bg-gray-800 transition-colors text-sm font-light"
+            >
+              ไปหน้าหลัก
+            </button>
+          </div>
+        </dialog>
+      )}
 
       <Footer />
     </div>
