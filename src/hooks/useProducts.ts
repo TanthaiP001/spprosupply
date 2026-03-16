@@ -23,10 +23,19 @@ interface ProductsResponse {
   products: Product[];
 }
 
-export function useProducts(categoryId?: string) {
-  const url = categoryId && categoryId !== 'all' 
-    ? `/api/products?categoryId=${categoryId}`
-    : '/api/products';
+export function useProducts(categoryId?: string, searchQuery?: string) {
+  const params = new URLSearchParams();
+
+  if (categoryId && categoryId !== "all") {
+    params.set("categoryId", categoryId);
+  }
+
+  if (searchQuery) {
+    params.set("q", searchQuery);
+  }
+
+  const queryString = params.toString();
+  const url = queryString ? `/api/products?${queryString}` : "/api/products";
   
   const { data, error, isLoading, mutate } = useSWR<ProductsResponse>(url, {
     dedupingInterval: 60_000,

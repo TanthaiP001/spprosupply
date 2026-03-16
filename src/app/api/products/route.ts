@@ -6,10 +6,18 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const categoryId = searchParams.get("categoryId");
+    const q = searchParams.get("q");
 
     const where: any = {};
     if (categoryId && categoryId !== "all") {
       where.categoryId = categoryId;
+    }
+
+    if (q && q.trim() !== "") {
+      where.name = {
+        contains: q.trim(),
+        mode: "insensitive",
+      };
     }
 
     const products = await prisma.product.findMany({

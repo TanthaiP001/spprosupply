@@ -58,9 +58,13 @@ export default function Header() {
 
           {/* Right Icons */}
           <div className="flex items-center space-x-4">
-            <button className="p-2 text-white/90 hover:text-white transition-colors">
+            <Link
+              href="/products"
+              className="p-2 text-white/90 hover:text-white transition-colors"
+              title="ค้นหาสินค้า"
+            >
               <Search className="h-5 w-5" />
-            </button>
+            </Link>
             <Link
               href="/cart"
               className="p-2 text-white/90 hover:text-white transition-colors relative"

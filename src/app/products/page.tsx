@@ -44,6 +44,7 @@ function ProductsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const categoryParam = searchParams.get("category") || "all";
+  const searchQuery = searchParams.get("q") || "";
   const pageParam = parseInt(searchParams.get("page") || "1", 10);
   
   const [selectedCategory, setSelectedCategory] = useState(categoryParam);
@@ -51,7 +52,8 @@ function ProductsContent() {
 
   // Use SWR hooks for data fetching with caching
   const { products, isLoading } = useProducts(
-    selectedCategory !== "all" ? selectedCategory : undefined
+    selectedCategory !== "all" ? selectedCategory : undefined,
+    searchQuery || undefined
   );
   const { categories } = useCategories();
 
@@ -151,6 +153,11 @@ function ProductsContent() {
                   ) : (
                     <>
                       พบสินค้า {products.length} รายการ
+                      {searchQuery && (
+                        <span className="ml-1">
+                          สำหรับคำค้น "{searchQuery}"
+                        </span>
+                      )}
                       {totalPages > 1 && (
                         <span className="ml-2">
                           (หน้า {currentPage} จาก {totalPages})
