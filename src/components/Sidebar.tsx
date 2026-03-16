@@ -56,7 +56,10 @@ export default function Sidebar({ selectedCategory: externalSelectedCategory, on
         {isLoading ? (
           <div className="text-sm text-gray-400 py-2">กำลังโหลด...</div>
         ) : (
-          categories.map((category) => {
+          categories
+            .slice()
+            .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+            .map((category) => {
             const isSelected = selectedCategory === category.id;
 
             return (

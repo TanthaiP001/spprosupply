@@ -19,14 +19,16 @@ export async function GET(request: NextRequest) {
         id: true,
         name: true,
         slug: true,
+        sortOrder: true,
         createdAt: true,
         _count: {
           select: { products: true },
         },
       },
-      orderBy: {
-        createdAt: "desc",
-      },
+      orderBy: [
+        { sortOrder: "asc" },
+        { createdAt: "desc" },
+      ],
     });
 
     return NextResponse.json({ categories }, { status: 200 });
@@ -73,10 +75,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // ให้หมวดหมู่ใหม่อยู่ล่างสุดของลำดับปัจจุบัน
+    const maxOrder = await prisma.category.aggregate({
+      _max: { sortOrder: true },
+    });
+
+    const nextOrder = (maxOrder._max.sortOrder ?? 0) + 1;
+
     const category = await prisma.category.create({
       data: {
         name,
         slug,
+        sortOrder: nextOrder,
       },
     });
 

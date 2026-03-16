@@ -8,12 +8,13 @@ import Header from "@/components/Header";
 const Footer = dynamic(() => import("@/components/Footer"));
 import RightNavbar from "@/components/RightNavbar";
 import { useAuth } from "@/contexts/AuthContext";
-import { Plus, Edit, Trash2, ArrowLeft, Folder, X } from "lucide-react";
+import { Plus, Edit, Trash2, ArrowLeft, Folder, X, GripVertical } from "lucide-react";
 
 interface Category {
   id: string;
   name: string;
   slug: string;
+  sortOrder?: number;
   createdAt?: string;
   _count?: {
     products: number;
@@ -27,6 +28,7 @@ export default function AdminCategoriesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [draggingId, setDraggingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     slug: "",
@@ -56,6 +58,86 @@ export default function AdminCategoriesPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const updateOrder = async (newOrder: Category[]) => {
+    try {
+      const withOrder = newOrder.map((category, index) => ({
+        ...category,
+        sortOrder: index + 1,
+      }));
+
+      setCategories(withOrder);
+
+      const response = await fetch("/api/admin/categories/reorder", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-id": user?.id || "",
+        },
+        body: JSON.stringify({
+          orderedIds: newOrder.map((c) => c.id),
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        alert(data.error || "เกิดข้อผิดพลาดในการอัปเดตลำดับ");
+        fetchCategories();
+      }
+    } catch (error) {
+      console.error("Error updating order:", error);
+      alert("เกิดข้อผิดพลาดในการอัปเดตลำดับ");
+      fetchCategories();
+    }
+  };
+
+  const handleDragStart = (
+    event: React.DragEvent<HTMLTableRowElement>,
+    id: string
+  ) => {
+    event.dataTransfer.setData("text/plain", id);
+    event.dataTransfer.effectAllowed = "move";
+    setDraggingId(id);
+  };
+
+  const handleDragOver = (event: React.DragEvent<HTMLTableRowElement>) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+  };
+
+  const handleDrop = (
+    event: React.DragEvent<HTMLTableRowElement>,
+    targetId: string
+  ) => {
+    event.preventDefault();
+    const sourceId = event.dataTransfer.getData("text/plain");
+    setDraggingId(null);
+
+    if (!sourceId || sourceId === targetId) {
+      return;
+    }
+
+    const sorted = [...categories].sort((a, b) => {
+      const aOrder = a.sortOrder ?? 0;
+      const bOrder = b.sortOrder ?? 0;
+      return aOrder - bOrder;
+    });
+
+    const fromIndex = sorted.findIndex((c) => c.id === sourceId);
+    const toIndex = sorted.findIndex((c) => c.id === targetId);
+
+    if (fromIndex === -1 || toIndex === -1) return;
+
+    const newOrder = [...sorted];
+    const [moved] = newOrder.splice(fromIndex, 1);
+    newOrder.splice(toIndex, 0, moved);
+
+    updateOrder(newOrder);
+  };
+
+  const handleDragEnd = () => {
+    setDraggingId(null);
   };
 
   const handleCreate = () => {
@@ -199,6 +281,9 @@ export default function AdminCategoriesPage() {
                 <thead className="bg-gray-50 border-b border-gray-100">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-light text-gray-500 uppercase tracking-wider">
+                      ลำดับ
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-light text-gray-500 uppercase tracking-wider">
                       ชื่อหมวดหมู่
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-light text-gray-500 uppercase tracking-wider">
@@ -216,8 +301,26 @@ export default function AdminCategoriesPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {categories.map((category) => (
-                    <tr key={category.id} className="hover:bg-gray-50 transition-colors">
+                  {categories.map((category, index) => (
+                    <tr
+                      key={category.id}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, category.id)}
+                      onDragOver={handleDragOver}
+                      onDrop={(e) => handleDrop(e, category.id)}
+                      onDragEnd={handleDragEnd}
+                      className={`hover:bg-gray-50 transition-colors ${
+                        draggingId === category.id ? "bg-gray-100" : ""
+                      }`}
+                    >
+                      <td className="px-6 py-4 text-sm font-light text-gray-600">
+                        <div className="flex items-center gap-2">
+                          <span className="cursor-move text-gray-400">
+                            <GripVertical className="w-4 h-4" />
+                          </span>
+                          <span>{index + 1}</span>
+                        </div>
+                      </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">

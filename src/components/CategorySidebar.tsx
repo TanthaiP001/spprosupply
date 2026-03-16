@@ -45,7 +45,10 @@ export default function CategorySidebar({
         {isLoading ? (
           <div className="text-sm text-gray-400 py-2">กำลังโหลด...</div>
         ) : (
-          categories.map((category) => (
+          categories
+            .slice()
+            .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+            .map((category) => (
             <label
               key={category.id}
               className="flex items-center gap-3 cursor-pointer group py-2.5 px-1 -mx-1 rounded-md hover:bg-gray-50 transition-colors"

@@ -9,14 +9,16 @@ export async function GET(request: NextRequest) {
         id: true,
         name: true,
         slug: true,
+        sortOrder: true,
         createdAt: true,
         _count: {
           select: { products: true },
         },
       },
-      orderBy: {
-        name: "asc",
-      },
+      orderBy: [
+        { sortOrder: "asc" },
+        { name: "asc" },
+      ],
     });
 
     return NextResponse.json({ categories }, { 
