@@ -24,9 +24,10 @@ export default memo(function BannerHighlight({
         <Image
           src={image}
           alt={title}
-          fill
+          width={1200}
+          height={400}
           sizes="(max-width: 768px) 100vw, (max-width: 1240px) 75vw, 900px"
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent"></div>
         <div className="absolute inset-0 flex items-center p-4 md:p-6">

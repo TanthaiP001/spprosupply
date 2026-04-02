@@ -40,6 +40,13 @@ const nextConfig: NextConfig = {
   ],
   images: {
     formats: ["image/avif", "image/webp"],
+    // Reduce the number of resized variants Next/Vercel has to generate.
+    // Keep this set aligned with the app's actual display widths (catalog + banners).
+    deviceSizes: [320, 420, 640, 768, 1024, 1280],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384, 512, 768, 1024, 1280],
+    // Prefer long-lived caching for optimized images so Vercel doesn't re-transform
+    // the same original URL/width combinations.
+    minimumCacheTTL: 15552000, // 180 days (in seconds)
     remotePatterns: [
       {
         protocol: "https",

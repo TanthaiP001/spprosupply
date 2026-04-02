@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { normalizeProductImages } from "@/lib/productImages";
 
 // GET product by slug or ID (public API)
 export async function GET(
@@ -88,8 +89,11 @@ export async function GET(
       take: 4,
     });
 
+    const normalizedProduct = normalizeProductImages(product);
+    const normalizedRelatedProducts = relatedProducts.map(normalizeProductImages);
+
     return NextResponse.json(
-      { product, relatedProducts },
+      { product: normalizedProduct, relatedProducts: normalizedRelatedProducts },
       {
         status: 200,
         headers: {

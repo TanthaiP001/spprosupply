@@ -63,8 +63,9 @@ export default function ContactUsPage() {
               <Image
                 src="/uploads/contactme.jpg"
                 alt="แผนที่ร้านเอสพีโปรซัพพลาย - SP Pro Supply Shop Map"
-                fill
-                className="object-contain"
+                width={800}
+                height={600}
+                className="w-full h-full object-contain"
                 priority
                 sizes="(max-width: 768px) 100vw, 800px"
               />

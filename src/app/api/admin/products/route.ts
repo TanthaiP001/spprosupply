@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyAdmin } from "@/lib/auth";
+import { normalizeProductImages } from "@/lib/productImages";
 
 // GET all products
 export async function GET(request: NextRequest) {
@@ -23,7 +24,9 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ products }, { status: 200 });
+    const normalizedProducts = products.map(normalizeProductImages);
+
+    return NextResponse.json({ products: normalizedProducts }, { status: 200 });
   } catch (error) {
     console.error("Get products error:", error);
     return NextResponse.json(
@@ -46,14 +49,23 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, price, image, categoryId, rating, reviews, tag, isHighlight, description } = body;
+    const { name, price, image, images, categoryId, rating, reviews, tag, isHighlight, description } = body;
 
-    if (!name || !price || !image || !categoryId) {
+    const imageList = Array.isArray(images)
+      ? images
+          .filter((u: unknown) => typeof u === "string" && u.trim().length > 0)
+          .slice(0, 3)
+      : [];
+    const finalImages = imageList.length > 0 ? imageList : image ? [image] : [];
+
+    if (!name || !price || !categoryId || finalImages.length === 0) {
       return NextResponse.json(
         { error: "กรุณากรอกข้อมูลให้ครบถ้วน" },
         { status: 400 }
       );
     }
+    
+    const storedImage = finalImages.length === 1 ? finalImages[0] : JSON.stringify(finalImages);
 
     // Generate slug from name
     function generateSlug(name: string): string {
@@ -65,7 +77,7 @@ export async function POST(request: NextRequest) {
         .trim();
     }
 
-    let slug = generateSlug(name);
+    const slug = generateSlug(name);
     
     // Check if slug already exists
     let existingProduct = await prisma.product.findUnique({
@@ -88,7 +100,7 @@ export async function POST(request: NextRequest) {
         name,
         slug: finalSlug,
         price: parseFloat(price),
-        image,
+        image: storedImage,
         categoryId,
         rating: rating ? parseFloat(rating) : 0,
         reviews: reviews ? parseInt(reviews) : 0,

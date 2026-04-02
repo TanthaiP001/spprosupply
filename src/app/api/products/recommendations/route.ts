@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { normalizeProductImages } from "@/lib/productImages";
 
 // GET recommended products (public API)
 export async function GET(request: NextRequest) {
@@ -20,7 +21,9 @@ export async function GET(request: NextRequest) {
       take: 20, // Limit to 20 products
     });
 
-    return NextResponse.json({ products }, { 
+    const normalizedProducts = products.map(normalizeProductImages);
+
+    return NextResponse.json({ products: normalizedProducts }, { 
       status: 200,
       headers: {
         'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',

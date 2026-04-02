@@ -308,12 +308,15 @@ export default function AdminBannersPage() {
                   {banners.map((banner) => (
                     <tr key={banner.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4">
-                        <div className="relative w-24 h-16 bg-gray-50 rounded overflow-hidden">
+                        <div className="w-24 h-16 bg-gray-50 rounded overflow-hidden">
                           <Image
                             src={banner.image}
                             alt={banner.title}
-                            fill
-                            className="object-cover"
+                            width={96}
+                            height={64}
+                            sizes="96px"
+                            loading="lazy"
+                            className="w-full h-full object-cover"
                           />
                         </div>
                       </td>
@@ -425,8 +428,11 @@ export default function AdminBannersPage() {
                       <Image
                         src={imagePreview}
                         alt="Preview"
-                        fill
-                        className="object-cover"
+                      width={1200}
+                      height={600}
+                      sizes="(max-width: 768px) 100vw, 1200px"
+                      loading="lazy"
+                      className="w-full h-full object-cover"
                       />
                       <button
                         type="button"

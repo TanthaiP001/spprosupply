@@ -90,14 +90,15 @@ export default function Recommendations() {
               <SwiperSlide key={product.id} className="!w-64">
                 <div className="bg-white rounded-lg overflow-hidden group border border-gray-100 h-full">
                   <Link href={`/products/${product.slug || product.id}`}>
-                    <div className="relative w-full h-48 bg-gray-50 cursor-pointer p-6">
+                    <div className="w-full h-48 bg-gray-50 cursor-pointer p-6">
                       <Image
                         src={product.image}
                         alt={product.name}
-                        fill
+                        width={256}
+                        height={192}
                         sizes="256px"
                         loading="lazy"
-                        className="object-contain group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                       />
                     </div>
                   </Link>

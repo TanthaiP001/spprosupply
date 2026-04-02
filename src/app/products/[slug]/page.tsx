@@ -22,6 +22,7 @@ interface Product {
   slug: string | null;
   price: number;
   image: string;
+  images?: string[] | null;
   categoryId: string;
   category: {
     id: string;
@@ -64,6 +65,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { addToCart } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<RelatedProduct[]>([]);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [showAddedMessage, setShowAddedMessage] = useState(false);
@@ -77,6 +79,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         if (response.ok && data.product) {
           setProduct(data.product);
           setRelatedProducts(data.relatedProducts || []);
+          setActiveImageIndex(0);
         } else {
           notFound();
         }
@@ -144,6 +147,12 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   }
 
   const category = product.category;
+  const productImages = (product.images && product.images.length > 0
+    ? product.images
+    : [product.image]
+  )
+    .filter((u) => typeof u === "string" && u.trim().length > 0)
+    .slice(0, 3);
 
   return (
     <div className="min-h-screen bg-white">
@@ -194,17 +203,51 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
           {/* Product Image */}
-          <div className="relative w-full aspect-square bg-gray-50 rounded-lg overflow-hidden">
+          <div className="w-full">
+            <div className="relative w-full aspect-square bg-gray-50 rounded-lg overflow-hidden">
             <Image
-              src={product.image}
-              alt={product.name}
-              fill
-              className="object-cover"
+              src={productImages[activeImageIndex]}
+              alt={`${product.name} - รูปที่ ${activeImageIndex + 1}`}
+              width={1200}
+              height={1200}
+              sizes="(max-width: 1024px) 100vw, 50vw"
               priority
+              className="w-full h-full object-cover"
             />
             {product.tag && (
               <div className="absolute top-4 right-4 bg-white px-3 py-1.5 rounded text-xs font-medium text-gray-700 border border-gray-200">
                 {product.tag}
+              </div>
+            )}
+            </div>
+
+            {productImages.length > 1 && (
+              <div className="mt-4 flex gap-3 overflow-x-auto pb-1">
+                {productImages.map((src, idx) => (
+                  <button
+                    key={`${src}-${idx}`}
+                    type="button"
+                    onClick={() => setActiveImageIndex(idx)}
+                    className={`shrink-0 rounded-lg overflow-hidden border ${
+                      idx === activeImageIndex
+                        ? "border-green-800"
+                        : "border-gray-200 hover:border-gray-300"
+                    } bg-gray-50`}
+                    aria-label={`เลือกภาพที่ ${idx + 1}`}
+                  >
+                    <div className="relative w-20 h-20">
+                      <Image
+                        src={src}
+                        alt={`${product.name} - Thumbnail รูปที่ ${idx + 1}`}
+                        width={160}
+                        height={160}
+                        sizes="80px"
+                        loading="lazy"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </button>
+                ))}
               </div>
             )}
           </div>
@@ -305,23 +348,12 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             {/* Additional Info */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 border-t border-gray-100">
               <div className="flex items-start gap-3">
-                <Truck className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
-                <div>
-                  <div className="text-xs font-light text-gray-900 mb-1 uppercase tracking-wider">
-                    จัดส่งฟรี
-                  </div>
-                  <div className="text-xs font-light text-gray-500">
-                    สำหรับคำสั่งซื้อมากกว่า $50
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
                 <Shield className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
                 <div>
                   <div className="text-xs font-light text-gray-900 mb-1 uppercase tracking-wider">
                     รับประกัน
                   </div>
-                  <div className="text-xs font-light text-gray-500">1 ปี</div>
+                  <div className="text-xs font-light text-gray-500">6 เดือน</div>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -350,12 +382,15 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                   className="bg-white rounded-lg overflow-hidden hover:shadow-md transition-shadow group border border-gray-100"
                 >
                   <Link href={`/products/${relatedProduct.slug || relatedProduct.id}`}>
-                    <div className="relative w-full h-48 bg-gray-50 cursor-pointer p-6">
+                    <div className="w-full h-48 bg-gray-50 cursor-pointer p-6">
                       <Image
                         src={relatedProduct.image}
                         alt={relatedProduct.name}
-                        fill
-                        className="object-contain group-hover:scale-105 transition-transform duration-300"
+                        width={512}
+                        height={256}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        loading="lazy"
+                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                       />
                     </div>
                   </Link>

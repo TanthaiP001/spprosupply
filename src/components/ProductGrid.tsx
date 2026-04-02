@@ -48,17 +48,19 @@ export default memo(function ProductGrid({ productsToShow }: ProductGridProps) {
       {productsToShow.map((product) => (
         <div
           key={product.id}
-          className="bg-white rounded-lg overflow-hidden hover:border-gray-300 transition-colors group"
+          className="bg-white rounded-lg overflow-hidden border border-gray-200 hover:border-gray-300 transition-colors group"
         >
           {/* Product Image - Clickable */}
           <Link href={`/products/${product.slug || product.id}`}>
-            <div className="relative w-full h-64 bg-gray-50 cursor-pointer p-8 border border-gray-100">
+            <div className="w-full h-64 bg-gray-50 cursor-pointer p-8 border border-gray-100">
               <Image
                 src={product.image}
                 alt={product.name}
-                fill
+                width={512}
+                height={512}
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                className="object-contain group-hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+                className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
               />
             </div>
           </Link>

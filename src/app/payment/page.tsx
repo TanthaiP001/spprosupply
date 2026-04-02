@@ -150,8 +150,9 @@ export default function PaymentPage() {
                 <Image
                   src="/uploads/detailpay1.jpg"
                   alt="วิธีการสั่งซื้อและชำระเงิน - How to Order and Pay"
-                  fill
-                  className="object-contain"
+                  width={800}
+                  height={600}
+                  className="w-full h-full object-contain"
                   priority
                   sizes="(max-width: 768px) 100vw, 400px"
                 />
@@ -162,8 +163,9 @@ export default function PaymentPage() {
                 <Image
                   src="/uploads/detailpay2.jpg"
                   alt="รายละเอียดวิธีการชำระเงิน - Payment Details"
-                  fill
-                  className="object-contain"
+                  width={800}
+                  height={600}
+                  className="w-full h-full object-contain"
                   priority
                   sizes="(max-width: 768px) 100vw, 400px"
                 />

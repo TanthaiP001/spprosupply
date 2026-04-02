@@ -479,12 +479,15 @@ export default function AdminOrdersPage() {
                       key={item.id}
                       className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200"
                     >
-                      <div className="relative w-20 h-20 bg-white rounded overflow-hidden flex-shrink-0">
+                      <div className="w-20 h-20 bg-white rounded overflow-hidden flex-shrink-0">
                         <Image
                           src={item.productImage}
                           alt={item.productName}
-                          fill
-                          className="object-cover"
+                          width={80}
+                          height={80}
+                          sizes="80px"
+                          loading="lazy"
+                          className="w-full h-full object-cover"
                         />
                       </div>
                       <div className="flex-1">
@@ -514,7 +517,8 @@ export default function AdminOrdersPage() {
                         alt="Payment slip"
                         width={600}
                         height={800}
-                        className="object-contain w-full"
+                        sizes="(max-width: 768px) 100vw, 600px"
+                        className="object-contain w-full h-auto"
                       />
                     </div>
                   </Link>

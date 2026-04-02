@@ -16,6 +16,7 @@ interface Product {
   name: string;
   price: number;
   image: string;
+  images?: string[] | null;
   categoryId: string;
   category: {
     id: string;
@@ -46,14 +47,14 @@ export default function AdminProductsPage() {
   const [formData, setFormData] = useState({
     name: "",
     price: "",
-    image: "",
+    images: [] as string[],
     categoryId: "",
     tag: "",
     isHighlight: false,
     description: "",
   });
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
@@ -104,14 +105,14 @@ export default function AdminProductsPage() {
     setFormData({
       name: "",
       price: "",
-      image: "",
+      images: [],
       categoryId: "",
       tag: "",
       isHighlight: false,
       description: "",
     });
-    setImageFile(null);
-    setImagePreview(null);
+    setImageFiles([]);
+    setImagePreviews([]);
     setIsModalOpen(true);
   };
 
@@ -120,14 +121,14 @@ export default function AdminProductsPage() {
     setFormData({
       name: product.name,
       price: product.price.toString(),
-      image: product.image,
+      images: (product.images && product.images.length > 0 ? product.images : [product.image]).slice(0, 3),
       categoryId: product.categoryId,
       tag: product.tag || "",
       isHighlight: product.isHighlight,
       description: product.description || "",
     });
-    setImageFile(null);
-    setImagePreview(product.image);
+    setImageFiles([]);
+    setImagePreviews((product.images && product.images.length > 0 ? product.images : [product.image]).slice(0, 3));
     setIsModalOpen(true);
   };
 
@@ -153,76 +154,106 @@ export default function AdminProductsPage() {
     }
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const limitedFiles = files.filter((f) => f.type.startsWith("image/")).slice(0, 3);
+    if (limitedFiles.length === 0) return;
+
+    // When selecting new files, treat it as a replacement.
+    setImageFiles(limitedFiles);
+    setFormData((prev) => ({ ...prev, images: [] }));
+
+    const previews = await Promise.all(
+      limitedFiles.map(
+        (file) =>
+          new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(file);
+          })
+      )
+    );
+    setImagePreviews(previews);
   };
 
-  const handleRemoveImage = () => {
-    setImageFile(null);
-    setImagePreview(null);
-    setFormData({ ...formData, image: "" });
-    const input = document.getElementById("image-upload") as HTMLInputElement;
-    if (input) input.value = "";
+  const handleRemoveImageAt = (index: number) => {
+    // Remove local files (and previews) first; when no local files exist, remove remote URLs.
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
+    if (imageFiles.length > 0) {
+      setImageFiles((prev) => prev.filter((_, i) => i !== index));
+      return;
+    }
+    setFormData((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index),
+    }));
   };
 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate image
-    if (!imageFile && !formData.image) {
-      alert("กรุณาอัปโหลดรูปภาพ");
+    // Validate images
+    if (imageFiles.length === 0 && formData.images.length === 0) {
+      alert("กรุณาอัปโหลดรูปภาพอย่างน้อย 1 รูป");
       return;
     }
 
-    let imageUrl = formData.image; // Use existing image if no new file
+    let imagesToSave = formData.images;
 
-    // If there's a new image file, upload it first
-    if (imageFile) {
+    // If there's new image files, upload them first
+    if (imageFiles.length > 0) {
       setIsUploading(true);
       try {
-        const uploadFormData = new FormData();
-        uploadFormData.append("file", imageFile);
+        const uploaded = await Promise.all(
+          imageFiles.map(async (imageFile) => {
+            const uploadFormData = new FormData();
+            uploadFormData.append("file", imageFile);
 
-        const uploadResponse = await fetch("/api/admin/upload", {
-          method: "POST",
-          headers: {
-            "x-user-id": user?.id || "",
-          },
-          body: uploadFormData,
-        });
+            const uploadResponse = await fetch("/api/admin/upload", {
+              method: "POST",
+              headers: {
+                "x-user-id": user?.id || "",
+              },
+              body: uploadFormData,
+            });
 
-        const uploadData = await uploadResponse.json();
+            const uploadData = await uploadResponse.json();
 
-        if (uploadResponse.ok) {
-          imageUrl = uploadData.url; // Store the new URL
-        } else {
-          alert(uploadData.error || "เกิดข้อผิดพลาดในการอัปโหลด");
-          setIsUploading(false);
-          return;
-        }
+            if (!uploadResponse.ok) {
+              throw new Error(uploadData.error || "เกิดข้อผิดพลาดในการอัปโหลด");
+            }
+
+            return uploadData.url as string;
+          })
+        );
+
+        imagesToSave = uploaded.slice(0, 3);
       } catch (error) {
         console.error("Upload error:", error);
-        alert("เกิดข้อผิดพลาดในการอัปโหลด");
-        setIsUploading(false);
+        alert(
+          error instanceof Error ? error.message : "เกิดข้อผิดพลาดในการอัปโหลด"
+        );
         return;
       } finally {
         setIsUploading(false);
       }
     }
 
-    // Prepare data with the correct image URL
+    if (!imagesToSave || imagesToSave.length === 0) {
+      alert("กรุณาอัปโหลดรูปภาพอย่างน้อย 1 รูป");
+      return;
+    }
+
+    imagesToSave = imagesToSave.slice(0, 3);
+
+    const imageUrl = imagesToSave[0];
+
+    // Prepare data with the correct images
     const submitData = {
       ...formData,
       image: imageUrl,
+      images: imagesToSave,
     };
 
     try {
@@ -244,8 +275,17 @@ export default function AdminProductsPage() {
 
       if (response.ok) {
         setIsModalOpen(false);
-        setImageFile(null);
-        setImagePreview(null);
+        setImageFiles([]);
+        setImagePreviews([]);
+        setFormData({
+          name: "",
+          price: "",
+          images: [],
+          categoryId: "",
+          tag: "",
+          isHighlight: false,
+          description: "",
+        });
         fetchProducts();
       } else {
         alert(data.error || "เกิดข้อผิดพลาด");
@@ -325,12 +365,15 @@ export default function AdminProductsPage() {
                   {products.map((product) => (
                     <tr key={product.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4">
-                        <div className="relative w-16 h-16 bg-gray-50 rounded overflow-hidden">
+                        <div className="w-16 h-16 bg-gray-50 rounded overflow-hidden">
                           <Image
                             src={product.image}
                             alt={product.name}
-                            fill
-                            className="object-cover"
+                            width={64}
+                            height={64}
+                            sizes="64px"
+                            loading="lazy"
+                            className="w-full h-full object-cover"
                           />
                         </div>
                       </td>
@@ -453,22 +496,34 @@ export default function AdminProductsPage() {
                 </label>
                 
                 {/* Image Preview */}
-                {imagePreview && (
-                  <div className="mb-4 relative">
-                    <div className="relative w-full h-48 bg-gray-50 rounded-lg overflow-hidden border border-gray-200">
-                      <Image
-                        src={imagePreview}
-                        alt="Preview"
-                        fill
-                        className="object-contain"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleRemoveImage}
-                        className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md text-gray-600 hover:text-red-500 transition-colors"
-                      >
-                        <XCircle className="w-5 h-5" />
-                      </button>
+                {imagePreviews.length > 0 && (
+                  <div className="mb-4">
+                    <div className="grid grid-cols-3 gap-2">
+                      {imagePreviews.map((src, idx) => (
+                        <div
+                          key={`${src}-${idx}`}
+                          className="relative aspect-square bg-gray-50 rounded-lg overflow-hidden border border-gray-200"
+                        >
+                          <Image
+                            src={src}
+                            alt={`Preview ${idx + 1}`}
+                            width={400}
+                            height={400}
+                            sizes="(max-width: 768px) 28vw, 120px"
+                            unoptimized={src.startsWith("data:")}
+                            loading="lazy"
+                            className="w-full h-full object-contain"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveImageAt(idx)}
+                            className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md text-gray-600 hover:text-red-500 transition-colors"
+                            aria-label={`ลบรูปที่ ${idx + 1}`}
+                          >
+                            <XCircle className="w-5 h-5" />
+                          </button>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
@@ -480,6 +535,7 @@ export default function AdminProductsPage() {
                       type="file"
                       id="image-upload"
                       accept="image/*"
+                      multiple
                       onChange={handleImageChange}
                       className="hidden"
                     />
@@ -489,7 +545,11 @@ export default function AdminProductsPage() {
                     >
                       <Upload className="w-8 h-8 text-gray-400 mb-2" />
                       <span className="text-sm font-light text-gray-600 mb-1">
-                        {imageFile ? imageFile.name : "คลิกเพื่อเลือกรูปภาพ"}
+                        {imageFiles.length > 0
+                          ? imageFiles.length === 1
+                            ? imageFiles[0].name
+                            : `${imageFiles.length} รูปที่เลือก`
+                          : "คลิกเพื่อเลือกรูปภาพ (สูงสุด 3 รูป)"}
                       </span>
                       <span className="text-xs font-light text-gray-400">
                         รองรับ JPG, PNG, GIF (สูงสุด 5MB)

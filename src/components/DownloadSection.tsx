@@ -42,6 +42,7 @@ export default function DownloadSection() {
                 alt="โบรชัวร์"
                 width={64}
                 height={64}
+                sizes="64px"
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
@@ -71,6 +72,7 @@ export default function DownloadSection() {
                 alt="ใบ Certificate"
                 width={64}
                 height={64}
+                sizes="64px"
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
@@ -115,6 +117,7 @@ export default function DownloadSection() {
                   alt={selectedTitle}
                   width={1200}
                   height={800}
+                  sizes="(max-width: 768px) 100vw, 1200px"
                   className="w-full h-auto object-contain"
                 />
               </div>

@@ -382,13 +382,16 @@ export default function CartPage() {
                       {/* Product Image */}
                       <Link
                         href={`/products/${item.slug || item.id}`}
-                        className="relative w-full md:w-24 h-24 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0"
+                        className="w-full md:w-24 h-24 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0"
                       >
                         <Image
                           src={item.image}
                           alt={item.name}
-                          fill
-                          className="object-cover"
+                          width={96}
+                          height={96}
+                          sizes="(max-width: 768px) 100vw, 96px"
+                          loading="lazy"
+                          className="w-full h-full object-cover"
                         />
                       </Link>
 
@@ -618,9 +621,13 @@ export default function CartPage() {
                   <div className="relative">
                     <div className={`rounded-lg p-4 flex items-center gap-4 border ${paymentSlipError ? "border-red-500 bg-red-50" : "border-gray-200"}`}>
                       {paymentSlipPreview && paymentSlip?.type.startsWith("image/") && (
-                        <img
+                        <Image
                           src={paymentSlipPreview}
                           alt="Payment slip preview"
+                          width={96}
+                          height={96}
+                          sizes="96px"
+                          unoptimized
                           className="w-24 h-24 object-cover rounded"
                         />
                       )}
@@ -753,11 +760,6 @@ export default function CartPage() {
                       )}
                     </span>
                   </div>
-                  {subtotal < 1000 && (
-                    <p className="text-xs font-light text-gray-400">
-                      ซื้อเพิ่มอีก {formatPrice(1000 - subtotal)} เพื่อรับการจัดส่งฟรี
-                    </p>
-                  )}
                   <div className="border-t border-gray-100 pt-4">
                     <div className="flex justify-between text-base font-light text-gray-900">
                       <span>ยอดรวมทั้งสิ้น</span>

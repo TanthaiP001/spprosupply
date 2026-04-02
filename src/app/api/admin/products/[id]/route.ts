@@ -19,16 +19,15 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { name, price, image, categoryId, rating, reviews, tag, isHighlight, description } = body;
+    const { name, price, image, images, categoryId, rating, reviews, tag, isHighlight, description } = body;
 
     // Get current product to check if name changed
     const currentProduct = await prisma.product.findUnique({
       where: { id },
     });
 
-    const updateData: any = {
+    const updateData = {
       ...(price !== undefined && { price: parseFloat(price) }),
-      ...(image && { image }),
       ...(categoryId && { categoryId }),
       ...(rating !== undefined && { rating: parseFloat(rating) }),
       ...(reviews !== undefined && { reviews: parseInt(reviews) }),
@@ -36,6 +35,20 @@ export async function PUT(
       ...(isHighlight !== undefined && { isHighlight }),
       ...(description !== undefined && { description }),
     };
+
+    // Update images gallery (max 3). Keep `image` in sync for backward compatibility.
+    if (Array.isArray(images)) {
+      const cleaned = images
+        .filter((u: unknown) => typeof u === "string" && u.trim().length > 0)
+        .slice(0, 3);
+      if (cleaned.length > 0) {
+        // Store multiple images in the existing `image` column as JSON array string.
+        updateData.image =
+          cleaned.length === 1 ? cleaned[0] : JSON.stringify(cleaned);
+      }
+    } else if (image) {
+      updateData.image = image;
+    }
 
     // If name changed, generate new slug
     if (name && name !== currentProduct?.name) {
@@ -48,7 +61,7 @@ export async function PUT(
           .trim();
       }
 
-      let slug = generateSlug(name);
+      const slug = generateSlug(name);
       
       // Check if slug already exists (excluding current product)
       let existingProduct = await prisma.product.findUnique({

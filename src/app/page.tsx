@@ -196,6 +196,7 @@ export default function Home() {
                       alt="Homepage Banner"
                       width={1200}
                       height={400}
+                      sizes="(max-width: 768px) 100vw, 1200px"
                       loading="lazy"
                       unoptimized={banner.gif}
                       className="w-full h-auto"
