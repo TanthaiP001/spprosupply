@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import SWRProvider from "@/components/SWRProvider";
 import WebsiteStructuredData from "@/components/WebsiteStructuredData";
 import OrganizationStructuredData from "@/components/OrganizationStructuredData";
@@ -126,6 +127,7 @@ export default function RootLayout({
           </AuthProvider>
         </SWRProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
