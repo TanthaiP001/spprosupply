@@ -498,17 +498,17 @@ export default function CartPage() {
                   </div>
                   <div>
                     <label className="block text-xs font-light text-gray-500 mb-2 uppercase tracking-wider">
-                      อีเมล *
+                      LINE *
                     </label>
                     <input
-                      type="email"
+                      type="text"
                       required
                       value={formData.email}
                       onChange={(e) =>
                         setFormData({ ...formData, email: e.target.value })
                       }
                       className="w-full px-4 py-2.5 border border-gray-200 focus:outline-none focus:border-black focus:ring-0 transition-colors text-sm font-light"
-                      placeholder="email@example.com"
+                      placeholder="@lineid หรือ เบอร์โทรที่ใช้ LINE"
                     />
                   </div>
                   <div className="md:col-span-2">
@@ -582,7 +582,7 @@ export default function CartPage() {
                       }
                       rows={3}
                       className="w-full px-4 py-2.5 border border-gray-200 focus:outline-none focus:border-black focus:ring-0 transition-colors text-sm font-light resize-none"
-                      placeholder="หมายเหตุเพิ่มเติม"
+                      placeholder="เช่น ขอใบเสนอราคา/ใบส่งของ/ใบเสร็จ"
                     />
                   </div>
                 </div>
