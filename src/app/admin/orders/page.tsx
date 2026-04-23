@@ -58,6 +58,14 @@ interface Order {
   items: OrderItem[];
 }
 
+/** ข้อความผู้ส่ง สำหรับฉลาก/PDF-รูป (static) */
+const ORDER_EXPORT_SHIP_FROM = {
+  name: "ร้านเอสพีโปรซัพพลาย",
+  address:
+    "164/1 หมู่ 5 ตำบลโคกคราม อำเภอบางปล้าม้า จังหวัดสุพรรณบุรี 72150",
+  phone: "0899213355",
+} as const;
+
 const statusConfig: Record<string, { label: string; color: string; icon: any }> = {
   pending: { label: "รอดำเนินการ", color: "bg-yellow-100 text-yellow-800", icon: Clock },
   confirmed: { label: "ยืนยันแล้ว", color: "bg-blue-100 text-blue-800", icon: CheckCircle },
@@ -433,15 +441,6 @@ export default function AdminOrdersPage() {
               <div className="flex items-center gap-2 flex-wrap shrink-0">
                 <button
                   type="button"
-                  onClick={handleExportPdf}
-                  disabled={isExporting}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium bg-black text-white hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  <FileDown className="w-4 h-4" />
-                  {isExporting ? "กำลังสร้าง…" : "ดาวน์โหลด PDF"}
-                </button>
-                <button
-                  type="button"
                   onClick={handleExportPng}
                   disabled={isExporting}
                   className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium border border-gray-300 text-gray-800 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
@@ -624,110 +623,52 @@ export default function AdminOrdersPage() {
                 </div>
               </div>
 
-              {/* ใบสรุปสำหรับพิมพ์ / สร้าง PDF-รูป (เนื้อหาเดียวกับปุ่มดาวน์โหลด) */}
               <p className="text-xs text-gray-500 mt-8 mb-2">
-                รูปแบบสำหรับพิมพ์ — ปุ่มดาวน์โหลดด้านบนจะใช้กรอบข้อมูลด้านล่างนี้
+                ฉลากส่งของ — เนื้อหาด้านล่างใช้กับดาวน์โหลด PDF/รูป
               </p>
               <div
                 ref={orderPrintRef}
-                className="border border-gray-200 rounded-lg bg-white p-6 text-gray-900 w-full max-w-[800px] mx-auto"
+                className="w-full max-w-sm mx-auto border-2 border-gray-900 rounded-md bg-white p-4 text-left text-sm text-gray-900 leading-normal"
                 data-order-export="true"
               >
-                <p className="text-lg font-bold text-center mb-1">ใบสรุปคำสั่งซื้อ</p>
-                <p className="text-center text-sm text-gray-600 mb-6">
-                  เลขที่ {selectedOrder.orderNumber} · วันที่ {formatDate(selectedOrder.createdAt)}
+                <p className="text-xs font-bold uppercase tracking-wide text-gray-600 border-b border-gray-300 pb-1 mb-2">
+                  ผู้ส่ง
                 </p>
-                {(() => {
-                  const s = statusConfig[selectedOrder.status] || statusConfig.pending;
-                  return (
-                    <p className="text-sm text-center mb-6">
-                      สถานะ: <span className="font-medium">{s.label}</span>
-                    </p>
-                  );
-                })()}
+                <p className="font-bold text-base text-gray-900">{ORDER_EXPORT_SHIP_FROM.name}</p>
+                <p className="text-sm mt-0.5 text-gray-900 whitespace-pre-line">
+                  {ORDER_EXPORT_SHIP_FROM.address}
+                </p>
+                <p className="text-sm font-semibold mt-1 text-gray-900">
+                  โทร. {ORDER_EXPORT_SHIP_FROM.phone}
+                </p>
 
-                <p className="text-sm font-semibold border-b border-gray-200 pb-1 mb-3">
-                  ข้อมูลผู้รับ / จัดส่ง
+                <p className="text-xs font-bold uppercase tracking-wide text-gray-600 border-b border-gray-300 pb-1 mt-4 mb-2">
+                  ผู้รับ
                 </p>
-                <div className="text-sm space-y-1.5 mb-4">
-                  <p>
-                    <span className="text-gray-600">ชื่อ:</span>{" "}
-                    <span className="font-medium">
-                      {selectedOrder.firstName} {selectedOrder.lastName}
-                    </span>
-                  </p>
-                  <p>
-                    <span className="text-gray-600">โทรศัพท์:</span>{" "}
-                    <span className="font-medium">{selectedOrder.phone}</span>
-                  </p>
-                  <p>
-                    <span className="text-gray-600">อีเมล:</span>{" "}
-                    <span className="font-medium break-all">{selectedOrder.email}</span>
-                  </p>
-                </div>
-                <p className="text-sm text-gray-600 mb-0.5">ที่อยู่จัดส่ง</p>
-                <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap">
+                <p className="text-sm">
+                  <span className="text-gray-600">ชื่อ-นามสกุล:</span>{" "}
+                  <span className="font-bold">
+                    {selectedOrder.firstName} {selectedOrder.lastName}
+                  </span>
+                </p>
+                <p className="text-sm mt-0.5">
+                  <span className="text-gray-600">โทร:</span>{" "}
+                  <span className="font-semibold">{selectedOrder.phone}</span>
+                </p>
+                <p className="text-sm text-gray-600 mt-1.5">ที่อยู่จัดส่ง</p>
+                <p className="text-sm font-medium text-gray-900 leading-snug whitespace-pre-wrap break-words">
                   {selectedOrder.address} {selectedOrder.district} {selectedOrder.province}{" "}
                   {selectedOrder.postalCode}
                 </p>
                 {selectedOrder.note && (
-                  <p className="text-sm mt-3">
+                  <p className="text-sm mt-2">
                     <span className="text-gray-600">หมายเหตุ:</span> {selectedOrder.note}
                   </p>
                 )}
 
-                <p className="text-sm font-semibold border-b border-gray-200 pb-1 mb-3 mt-6">
-                  รายการสินค้า
+                <p className="text-[11px] text-gray-500 pt-3 mt-3 border-t border-dashed border-gray-300">
+                  อ้างอิง: {selectedOrder.orderNumber}
                 </p>
-                <table className="w-full text-sm border-collapse">
-                  <thead>
-                    <tr className="border-b border-gray-200 text-left text-gray-600">
-                      <th className="py-2 pr-2 font-medium w-8">#</th>
-                      <th className="py-2 pr-2 font-medium">สินค้า</th>
-                      <th className="py-2 pr-2 font-medium text-right w-20">จำนวน</th>
-                      <th className="py-2 pr-2 font-medium text-right w-24">ราคา/หน่วย</th>
-                      <th className="py-2 font-medium text-right w-28">รวม</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {selectedOrder.items.map((item, idx) => (
-                      <tr key={item.id} className="border-b border-gray-100 align-top">
-                        <td className="py-2 pr-2">{idx + 1}</td>
-                        <td className="py-2 pr-2">
-                          <span className="font-medium">{item.productName}</span>
-                        </td>
-                        <td className="py-2 pr-2 text-right">{item.quantity}</td>
-                        <td className="py-2 pr-2 text-right whitespace-nowrap">
-                          {formatPrice(item.price)}
-                        </td>
-                        <td className="py-2 text-right font-medium whitespace-nowrap">
-                          {formatPrice(item.price * item.quantity)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-
-                <p className="text-sm text-gray-600 mt-2">
-                  สลิปแนบ: {selectedOrder.paymentSlip ? "แนบในระบบ (ดูด้านบน)" : "—"}
-                </p>
-
-                <div className="mt-5 pt-4 border-t-2 border-gray-900 space-y-1.5 text-sm max-w-sm ml-auto">
-                  <div className="flex justify-between gap-4">
-                    <span className="text-gray-600">ยอดรวมสินค้า</span>
-                    <span className="font-medium">{formatPrice(selectedOrder.subtotal)}</span>
-                  </div>
-                  <div className="flex justify-between gap-4">
-                    <span className="text-gray-600">ค่าจัดส่ง</span>
-                    <span className="font-medium">
-                      {selectedOrder.shippingFee === 0 ? "ฟรี" : formatPrice(selectedOrder.shippingFee)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between gap-4 text-base font-bold pt-1">
-                    <span>ยอดรวมทั้งสิ้น</span>
-                    <span>{formatPrice(selectedOrder.total)}</span>
-                  </div>
-                </div>
               </div>
             </div>
 
