@@ -21,7 +21,11 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { downloadElementAsPdf, downloadElementAsPng } from "@/lib/orderExport";
+import {
+  downloadElementAsPdf,
+  downloadElementAsPng,
+  getExportErrorMessage,
+} from "@/lib/orderExport";
 
 interface OrderItem {
   id: string;
@@ -189,7 +193,7 @@ export default function AdminOrdersPage() {
       );
     } catch (e) {
       console.error(e);
-      alert("ไม่สามารถสร้างไฟล์ PDF ได้ ลองอีกครั้ง");
+      alert(`ไม่สามารถสร้างไฟล์ PDF ได้\n\n${getExportErrorMessage(e)}`);
     } finally {
       setIsExporting(false);
     }
@@ -205,7 +209,7 @@ export default function AdminOrdersPage() {
       );
     } catch (e) {
       console.error(e);
-      alert("ไม่สามารถบันทึกรูปได้ ลองอีกครั้ง");
+      alert(`ไม่สามารถบันทึกรูปได้\n\n${getExportErrorMessage(e)}`);
     } finally {
       setIsExporting(false);
     }
