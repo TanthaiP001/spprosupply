@@ -159,9 +159,10 @@ export async function renderElementToCanvas(
   }
 
   const timp = nowMs();
-  const html2canvas = (await import("html2canvas")).default;
+  // html2canvas 1.x ไม่รองรับ lab()/oklch ของ Tailwind v4 — ใช้ html2canvas-pro แทน
+  const html2canvas = (await import("html2canvas-pro")).default;
   if (logCtx) {
-    logInfo(logCtx, "render:import_html2canvas", { ms: Math.round(nowMs() - timp) });
+    logInfo(logCtx, "render:import_html2canvas_pro", { ms: Math.round(nowMs() - timp) });
   }
 
   const useScale = safeExportScale(el, scale);
