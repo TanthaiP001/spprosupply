@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 
 export default function Header() {
-  const { isAuthenticated, user, isAdmin } = useAuth();
+  const { isAuthenticated, isAdmin } = useAuth();
   const { getCartItemCount } = useCart();
   const cartItemCount = getCartItemCount();
   
@@ -26,14 +26,14 @@ export default function Header() {
       <div className="container-custom">
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="relative w-10 h-10 flex items-center justify-center bg-white rounded-lg p-0">
+          <Link href="/" className="focus-ring group flex items-center space-x-3 rounded-md">
+            <div className="relative flex h-10 w-10 items-center justify-center rounded-lg bg-white p-0">
               <Image
                 src="/logo/logo.png"
                 alt="Spprosupply Logo"
                 width={55}
                 height={55}
-                className="object-contain group-hover:scale-105 transition-transform"
+                className="hover-scale object-contain"
                 priority
               />
             </div>
@@ -43,31 +43,31 @@ export default function Header() {
           </Link>
 
           {/* Navigation Menu */}
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden items-center space-x-6 md:flex" aria-label="เมนูหลัก">
             {menuItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-sm font-medium text-white/90 hover:text-white transition-colors relative group"
+                className="focus-ring group relative rounded-sm text-sm font-medium text-white/90 transition-colors hover:text-white"
               >
                 {item.label}
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-white origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
+                <span className="absolute bottom-0 left-0 h-0.5 w-full origin-left scale-x-0 bg-white transition-transform duration-200 group-hover:scale-x-100 motion-reduce:transition-none" />
               </Link>
             ))}
           </nav>
 
-          {/* Right Icons */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             <Link
               href="/products"
-              className="p-2 text-white/90 hover:text-white transition-colors"
-              title="ค้นหาสินค้า"
+              className="focus-ring flex min-h-11 min-w-11 items-center justify-center rounded-md p-2 text-white/90 transition-colors hover:text-white"
+              aria-label="ค้นหาสินค้า"
             >
               <Search className="h-5 w-5" />
             </Link>
             <Link
               href="/cart"
-              className="p-2 text-white/90 hover:text-white transition-colors relative"
+              className="focus-ring relative flex min-h-11 min-w-11 items-center justify-center rounded-md p-2 text-white/90 transition-colors hover:text-white"
+              aria-label="ตะกร้าสินค้า"
             >
               <ShoppingCart className="h-5 w-5" />
               {cartItemCount > 0 && (
@@ -78,10 +78,10 @@ export default function Header() {
             </Link>
             <Link
               href={isAuthenticated ? "/profile" : "/login"}
-              className="p-2 text-white/90 hover:text-white transition-colors"
-              title={isAuthenticated ? user?.email : "เข้าสู่ระบบ"}
+              className="focus-ring flex min-h-11 min-w-11 items-center justify-center rounded-md p-2 text-white/90 transition-colors hover:text-white"
+              aria-label={isAuthenticated ? "โปรไฟล์" : "เข้าสู่ระบบ"}
             >
-              <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-md hover:bg-white/30 transition-all">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 shadow-md transition-colors hover:bg-white/30">
                 <User className="h-4 w-4 text-white" />
               </div>
             </Link>

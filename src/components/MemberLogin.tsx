@@ -47,7 +47,7 @@ export default function MemberLogin() {
           </div>
           <Link
             href={isAdmin ? "/admin" : "/profile"}
-            className="block w-full bg-black text-white py-2.5 px-4 hover:bg-gray-900 transition-colors text-sm font-light text-center border border-black"
+            className="focus-ring block w-full rounded-md border border-green-800 bg-green-700 py-2.5 px-4 text-center text-sm font-medium text-white transition-colors hover:bg-green-800"
           >
             {isAdmin ? "ไปที่ Admin Panel" : "ไปที่โปรไฟล์"}
           </Link>
@@ -72,7 +72,7 @@ export default function MemberLogin() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="กรอกชื่อผู้ใช้หรืออีเมล"
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 focus:outline-none focus:border-black focus:ring-0 transition-colors text-sm font-light bg-white"
+              className="focus-ring w-full rounded-md border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm transition-colors focus:border-green-700"
               required
             />
           </div>
@@ -89,7 +89,7 @@ export default function MemberLogin() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="กรอกรหัสผ่าน"
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 focus:outline-none focus:border-black focus:ring-0 transition-colors text-sm font-light bg-white"
+              className="focus-ring w-full rounded-md border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm transition-colors focus:border-green-700"
               required
             />
           </div>
@@ -97,7 +97,7 @@ export default function MemberLogin() {
 
         <button
           type="submit"
-          className="w-full bg-black text-white py-2.5 px-4 hover:bg-gray-900 transition-colors text-sm font-light border border-black"
+          className="focus-ring w-full rounded-md border border-green-800 bg-green-700 py-2.5 px-4 text-sm font-medium text-white transition-colors hover:bg-green-800"
         >
           เข้าสู่ระบบ
         </button>
@@ -110,7 +110,7 @@ export default function MemberLogin() {
 
         <Link
           href="/register"
-          className="block w-full bg-white text-gray-900 py-2.5 px-4 hover:bg-gray-50 transition-colors text-sm font-light border border-gray-200 text-center"
+          className="focus-ring block w-full rounded-md border border-gray-200 bg-white py-2.5 px-4 text-center text-sm font-medium text-gray-900 transition-colors hover:bg-gray-50"
         >
           สมัครสมาชิก
         </Link>

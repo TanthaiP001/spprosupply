@@ -8,11 +8,9 @@ export default function DownloadSection() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedTitle, setSelectedTitle] = useState<string>("");
 
-  const handleDownload = (type: "brochure" | "certificate", e: React.MouseEvent) => {
+  const handleDownload = (_type: "brochure" | "certificate", e: React.MouseEvent) => {
     e.stopPropagation();
-    // Handle download logic here
-    console.log("Download:", type);
-    // In a real app, this would trigger a file download
+    // File download not yet wired to backend
   };
 
   const handleViewImage = (imageSrc: string, title: string, e: React.MouseEvent) => {
@@ -51,7 +49,7 @@ export default function DownloadSection() {
             </button>
             <div className="flex-1 min-w-0">
               <div className="text-sm font-light text-gray-900 mb-0.5">โบรชัวร์</div>
-              <div className="text-xs font-light text-gray-400">Download Brochure</div>
+              <div className="text-xs text-gray-500">ดาวน์โหลดโบรชัวร์</div>
             </div>
             <button
               onClick={(e) => handleDownload("brochure", e)}
@@ -81,7 +79,7 @@ export default function DownloadSection() {
             </button>
             <div className="flex-1 min-w-0">
               <div className="text-sm font-light text-gray-900 mb-0.5">ใบ Certificate</div>
-              <div className="text-xs font-light text-gray-400">Download Certificate</div>
+              <div className="text-xs text-gray-500">ดาวน์โหลดใบรับรอง</div>
             </div>
             <button
               onClick={(e) => handleDownload("certificate", e)}

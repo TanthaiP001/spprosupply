@@ -25,81 +25,77 @@ export default function Sidebar({ selectedCategory: externalSelectedCategory, on
     }
   }, [onCategoryChange]);
 
+  const categoryButtonClass = (isSelected: boolean) =>
+    `flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left transition-colors focus-ring ${
+      isSelected
+        ? "bg-green-50 ring-1 ring-green-700/25 shadow-sm"
+        : "hover:bg-gray-50"
+    }`;
+
+  const categoryLabelClass = (isSelected: boolean) =>
+    `flex-1 text-sm transition-colors ${
+      isSelected
+        ? "font-medium text-green-800"
+        : "font-normal text-gray-600 hover:text-green-800"
+    }`;
+
   return (
-    <aside className="w-full md:w-64 bg-gradient-to-b from-white to-gray-50/40 border-r border-gray-200 p-8">
-      <h2 className="text-base font-semibold text-green-800 mb-8 tracking-wide uppercase">Category</h2>
-      
-      {/* Category Filters */}
-      <div className="space-y-1 mb-10">
-        {/* All Products Option */}
-        <label
+    <aside className="w-full md:w-64 border-r border-gray-200 bg-gradient-to-b from-white to-gray-50/40 p-6 md:p-8">
+      <h2 className="mb-6 text-sm font-semibold tracking-wide text-green-800">
+        หมวดหมู่
+      </h2>
+
+      <nav aria-label="หมวดหมู่สินค้า" className="mb-10 space-y-1">
+        <button
+          type="button"
           onClick={() => handleCategoryChange("all")}
-          className={`flex items-center gap-3 cursor-pointer group py-2.5 px-3 -mx-3 rounded-md transition-all ${
-            selectedCategory === "all"
-              ? "bg-green-50/60 border-l-4 border-green-700 shadow-sm"
-              : "hover:bg-gray-50 border-l-4 border-transparent"
-          }`}
+          aria-current={selectedCategory === "all" ? "true" : undefined}
+          className={categoryButtonClass(selectedCategory === "all")}
         >
-          <span className={`text-sm font-light transition-colors flex-1 ${
-            selectedCategory === "all"
-              ? "text-green-800 font-medium"
-              : "text-gray-600 group-hover:text-green-800"
-          }`}>
+          <span className={categoryLabelClass(selectedCategory === "all")}>
             สินค้าทั้งหมด
           </span>
           {selectedCategory === "all" && (
-            <div className="w-2 h-2 bg-green-700 rounded-full"></div>
+            <span className="h-2 w-2 shrink-0 rounded-full bg-green-700" aria-hidden="true" />
           )}
-        </label>
+        </button>
 
-        {/* Category List */}
         {isLoading ? (
-          <div className="text-sm text-gray-400 py-2">กำลังโหลด...</div>
+          <div className="space-y-2 py-2" aria-busy="true" aria-label="กำลังโหลดหมวดหมู่">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-10 animate-pulse rounded-md bg-gray-100" />
+            ))}
+          </div>
         ) : (
           categories
             .slice()
             .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
             .map((category) => {
-            const isSelected = selectedCategory === category.id;
+              const isSelected = selectedCategory === category.id;
 
-            return (
-              <label
-                key={category.id}
-                onClick={() => handleCategoryChange(category.id)}
-                className={`flex items-center gap-3 cursor-pointer group py-2.5 px-3 -mx-3 rounded-md transition-all ${
-                  isSelected
-                    ? "bg-green-50/60 border-l-4 border-green-700 shadow-sm"
-                    : "hover:bg-gray-50 border-l-4 border-transparent"
-                }`}
-              >
-                <span className={`text-sm font-light transition-colors flex-1 ${
-                  isSelected
-                    ? "text-green-800 font-medium"
-                    : "text-gray-600 group-hover:text-green-800"
-                }`}>
-                  {category.name}
-                </span>
-                {isSelected && (
-                  <div className="w-2 h-2 bg-green-700 rounded-full"></div>
-                )}
-              </label>
-            );
-          })
+              return (
+                <button
+                  key={category.id}
+                  type="button"
+                  onClick={() => handleCategoryChange(category.id)}
+                  aria-current={isSelected ? "true" : undefined}
+                  className={categoryButtonClass(isSelected)}
+                >
+                  <span className={categoryLabelClass(isSelected)}>
+                    {category.name}
+                  </span>
+                  {isSelected && (
+                    <span className="h-2 w-2 shrink-0 rounded-full bg-green-700" aria-hidden="true" />
+                  )}
+                </button>
+              );
+            })
         )}
-      </div>
+      </nav>
 
-      {/* Additional Filters */}
-
-
-      {/* Member Login Section */}
       <MemberLogin />
-
-      {/* Download Section */}
       <DownloadSection />
-
-      {/* Website Stats Section */}
       <WebsiteStats />
     </aside>
   );
 }
-

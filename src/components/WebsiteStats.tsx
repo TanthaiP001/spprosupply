@@ -51,7 +51,11 @@ export default function WebsiteStats() {
       <h3 className="text-base font-light text-gray-900 mb-6 tracking-wide uppercase">สถิติการเข้าชม</h3>
       
       {isLoading ? (
-        <div className="text-sm text-gray-400 py-4">กำลังโหลด...</div>
+        <div className="space-y-3 py-2" aria-busy="true">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="h-16 animate-pulse rounded-md border border-gray-100 bg-gray-50" />
+          ))}
+        </div>
       ) : (
         <div className="space-y-3">
           {/* Total Visitors */}
@@ -60,7 +64,7 @@ export default function WebsiteStats() {
               <Eye className="w-4 h-4 text-gray-500" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-light text-gray-400 mb-1">ผู้เข้าชมทั้งหมด</div>
+              <div className="mb-1 text-xs text-gray-500">ผู้เข้าชมทั้งหมด</div>
               <div className="text-base font-light text-gray-900">
                 {stats.totalVisitors.toLocaleString()}
               </div>
@@ -73,7 +77,7 @@ export default function WebsiteStats() {
               <TrendingUp className="w-4 h-4 text-gray-500" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-light text-gray-400 mb-1">ผู้เข้าชมวันนี้</div>
+              <div className="mb-1 text-xs text-gray-500">ผู้เข้าชมวันนี้</div>
               <div className="text-base font-light text-gray-900">
                 {formatNumber(stats.todayVisitors)}
               </div>
@@ -86,7 +90,7 @@ export default function WebsiteStats() {
               <Users className="w-4 h-4 text-gray-500" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-light text-gray-400 mb-1">กำลังออนไลน์</div>
+              <div className="mb-1 text-xs text-gray-500">กำลังออนไลน์</div>
               <div className="text-base font-light text-gray-900">
                 {stats.onlineNow}
               </div>

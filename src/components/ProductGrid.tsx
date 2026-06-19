@@ -40,19 +40,20 @@ export default memo(function ProductGrid({ productsToShow }: ProductGridProps) {
     e.preventDefault();
     e.stopPropagation();
     addToCart(productId, 1);
-    // Optional: Show toast notification
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[30px]">
+    <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
       {productsToShow.map((product) => (
-        <div
+        <article
           key={product.id}
-          className="bg-white rounded-lg overflow-hidden border border-gray-200 hover:border-gray-300 transition-colors group"
+          className="group overflow-hidden rounded-lg border border-gray-200 bg-white transition-colors hover:border-gray-300"
         >
-          {/* Product Image - Clickable */}
-          <Link href={`/products/${product.slug || product.id}`}>
-            <div className="w-full h-64 bg-gray-50 cursor-pointer p-8 border border-gray-100">
+          <Link
+            href={`/products/${product.slug || product.id}`}
+            className="focus-ring block"
+          >
+            <div className="flex h-64 cursor-pointer items-center justify-center bg-gray-50 p-8">
               <Image
                 src={product.image}
                 alt={product.name}
@@ -60,36 +61,39 @@ export default memo(function ProductGrid({ productsToShow }: ProductGridProps) {
                 height={512}
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 loading="lazy"
-                className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                className="hover-scale h-full w-full object-contain"
               />
             </div>
           </Link>
 
-          {/* Product Info */}
-          <div className="p-5 flex flex-col justify-between min-h-[140px] border border-gray-100">
-            <Link href={`/products/${product.slug || product.id}`}>
-              <h3 className="text-base font-medium text-gray-900 mb-3 hover:text-gray-700 transition-colors cursor-pointer line-clamp-2">
+          <div className="flex min-h-[140px] flex-col justify-between p-5">
+            <Link
+              href={`/products/${product.slug || product.id}`}
+              className="focus-ring rounded-sm"
+            >
+              <h3 className="mb-3 line-clamp-2 text-base font-medium text-gray-900 transition-colors hover:text-green-800">
                 {product.name}
               </h3>
             </Link>
 
-            {/* Price and Add to Cart */}
-            <div className="flex items-center justify-between mt-auto">
+            <div className="mt-auto flex items-center justify-between gap-3">
               <div className="text-xl font-semibold text-gray-900">
                 {formatPrice(product.price)}
               </div>
               <button
+                type="button"
                 onClick={(e) => handleAddToCart(product.id, e)}
-                className="bg-green-700 text-white py-2 px-4 rounded-md hover:bg-green-800 transition-all text-sm font-medium flex items-center justify-center gap-2 shadow-sm hover:shadow-md cursor-pointer"
+                aria-label={`เพิ่ม ${product.name} ลงตะกร้า`}
+                className="focus-ring flex min-h-11 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-md bg-green-700 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-green-800"
               >
-                <ShoppingCart className="w-4 h-4" />
-                เพิ่มลงตะกร้า
+                <ShoppingCart className="h-4 w-4" aria-hidden="true" />
+                <span className="hidden sm:inline">เพิ่มลงตะกร้า</span>
+                <span className="sm:hidden">เพิ่ม</span>
               </button>
             </div>
           </div>
-        </div>
+        </article>
       ))}
     </div>
   );
 })
-

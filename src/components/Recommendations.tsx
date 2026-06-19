@@ -1,9 +1,9 @@
 "use client";
 
 import { useRef } from "react";
+import Link from "next/link";
 import { ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useCart } from "@/contexts/CartContext";
 import { useRecommendedProducts } from "@/hooks/useProducts";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -31,26 +31,28 @@ export default function Recommendations() {
   };
 
   return (
-    <div className="py-12 bg-white content-auto">
+    <section aria-labelledby="recommendations-heading" className="content-auto bg-white py-12">
       <div className="container-custom">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-green-800">
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <h2 id="recommendations-heading" className="section-heading">
             สินค้าแนะนำจากทางร้าน
           </h2>
-          <div className="flex gap-2">
+          <div className="flex shrink-0 gap-2">
             <button
+              type="button"
               onClick={() => swiperRef.current?.slidePrev()}
-              className="p-2 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              aria-label="Previous"
+              className="focus-ring flex min-h-11 min-w-11 items-center justify-center rounded-md border border-gray-300 transition-colors hover:border-gray-400 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+              aria-label="เลื่อนไปซ้าย"
             >
-              <ChevronLeft className="w-5 h-5 text-gray-600" />
+              <ChevronLeft className="h-5 w-5 text-gray-600" aria-hidden="true" />
             </button>
             <button
+              type="button"
               onClick={() => swiperRef.current?.slideNext()}
-              className="p-2 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              aria-label="Next"
+              className="focus-ring flex min-h-11 min-w-11 items-center justify-center rounded-md border border-gray-300 transition-colors hover:border-gray-400 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+              aria-label="เลื่อนไปขวา"
             >
-              <ChevronRight className="w-5 h-5 text-gray-600" />
+              <ChevronRight className="h-5 w-5 text-gray-600" aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -72,8 +74,14 @@ export default function Recommendations() {
             ))}
           </div>
         ) : displayProducts.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-400 font-light">ยังไม่มีสินค้าแนะนำ</p>
+          <div className="rounded-lg border border-dashed border-gray-200 bg-gray-50/60 px-6 py-16 text-center">
+            <p className="mb-4 text-gray-600">ยังไม่มีสินค้าแนะนำในขณะนี้</p>
+            <Link
+              href="/products"
+              className="focus-ring inline-flex min-h-11 items-center rounded-md bg-green-700 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-green-800"
+            >
+              ดูสินค้าทั้งหมด
+            </Link>
           </div>
         ) : (
           <div className="overflow-hidden">
@@ -88,9 +96,12 @@ export default function Recommendations() {
             >
             {displayProducts.map((product) => (
               <SwiperSlide key={product.id} className="!w-64">
-                <div className="bg-white rounded-lg overflow-hidden group border border-gray-100 h-full">
-                  <Link href={`/products/${product.slug || product.id}`}>
-                    <div className="w-full h-48 bg-gray-50 cursor-pointer p-6">
+                <article className="group h-full overflow-hidden rounded-lg border border-gray-200 bg-white">
+                  <Link
+                    href={`/products/${product.slug || product.id}`}
+                    className="focus-ring block"
+                  >
+                    <div className="flex h-48 cursor-pointer items-center justify-center bg-gray-50 p-6">
                       <Image
                         src={product.image}
                         alt={product.name}
@@ -98,38 +109,43 @@ export default function Recommendations() {
                         height={192}
                         sizes="256px"
                         loading="lazy"
-                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                        className="hover-scale h-full w-full object-contain"
                       />
                     </div>
                   </Link>
 
-                  <div className="p-5 flex flex-col justify-between min-h-[140px]">
-                    <Link href={`/products/${product.slug || product.id}`}>
-                      <h3 className="text-base font-medium text-gray-900 mb-3 hover:text-gray-700 transition-colors cursor-pointer line-clamp-2">
+                  <div className="flex min-h-[140px] flex-col justify-between p-5">
+                    <Link
+                      href={`/products/${product.slug || product.id}`}
+                      className="focus-ring rounded-sm"
+                    >
+                      <h3 className="mb-3 line-clamp-2 text-base font-medium text-gray-900 transition-colors hover:text-green-800">
                         {product.name}
                       </h3>
                     </Link>
 
-                    <div className="flex items-center justify-between mt-auto">
+                    <div className="mt-auto flex items-center justify-between gap-3">
                       <div className="text-xl font-semibold text-gray-900">
                         {formatPrice(product.price)}
                       </div>
                       <button
+                        type="button"
                         onClick={(e) => handleAddToCart(product.id, e)}
-                        className="bg-green-700 text-white py-2 px-4 rounded-md hover:bg-green-800 transition-all text-sm font-medium flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
+                        aria-label={`เพิ่ม ${product.name} ลงตะกร้า`}
+                        className="focus-ring flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-md bg-green-700 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-green-800"
                       >
-                        <ShoppingCart className="w-4 h-4" />
+                        <ShoppingCart className="h-4 w-4" aria-hidden="true" />
                         เพิ่มลงตะกร้า
                       </button>
                     </div>
                   </div>
-                </div>
+                </article>
               </SwiperSlide>
             ))}
           </Swiper>
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 }

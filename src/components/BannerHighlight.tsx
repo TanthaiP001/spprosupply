@@ -18,30 +18,32 @@ export default memo(function BannerHighlight({
   return (
     <Link
       href={link}
-      className="group relative block w-full h-44 md:h-52 rounded-lg overflow-hidden mb-6 hover:shadow-xl transition-shadow"
+      className="focus-ring group relative mb-6 block h-44 w-full overflow-hidden rounded-lg transition-shadow hover:shadow-lg md:h-52"
     >
-      <div className="relative w-full h-full">
+      <div className="relative h-full w-full">
         <Image
           src={image}
           alt={title}
           width={1200}
           height={400}
           sizes="(max-width: 768px) 100vw, (max-width: 1240px) 75vw, 900px"
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          className="hover-scale h-full w-full object-cover"
+          priority
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
         <div className="absolute inset-0 flex items-center p-4 md:p-6">
-          <div className="text-white max-w-sm">
-            <h2 className="text-xl md:text-2xl font-bold mb-1.5 drop-shadow-lg">
+          <div className="max-w-sm text-white">
+            <h2 className="mb-1.5 text-xl font-bold drop-shadow-lg text-balance md:text-2xl">
               {title}
             </h2>
-            <p className="text-sm md:text-base mb-2 drop-shadow-md opacity-90">
-              {description}
-            </p>
+            {description && (
+              <p className="text-sm drop-shadow-md opacity-95 md:text-base">
+                {description}
+              </p>
+            )}
           </div>
         </div>
       </div>
     </Link>
   );
 })
-

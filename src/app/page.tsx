@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import dynamic from "next/dynamic";
 import Header from "@/components/Header";
 import Banner from "@/components/Banner";
@@ -39,25 +40,6 @@ const Footer = dynamic(() => import("@/components/Footer"));
 import { highlightBanners } from "@/data/mockData";
 import { useProducts, useHighlightProducts } from "@/hooks/useProducts";
 import { useBanners } from "@/hooks/useBanners";
-
-interface Product {
-  id: string;
-  name: string;
-  slug: string | null;
-  price: number;
-  image: string;
-  categoryId: string;
-  category: {
-    id: string;
-    name: string;
-    slug: string;
-  };
-  rating: number;
-  reviews: number;
-  tag?: string | null;
-  isHighlight: boolean;
-  description?: string | null;
-}
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -140,24 +122,22 @@ export default function Home() {
 
             {/* Product Highlight Section */}
             <div className="mt-8">
-              <h2 className="text-2xl md:text-3xl font-bold text-green-800 mb-6">
+              <h2 className="section-heading mb-6">
                 {selectedCategory === "all" ? "สินค้าขายดี" : "สินค้าในหมวดหมู่"}
               </h2>
               {(() => {
                 if (isLoading) {
                   return (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[30px]">
+                    <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                       {Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} className="bg-white rounded-lg overflow-hidden animate-pulse">
-                          <div className="w-full h-64 bg-gray-200 border border-gray-100" />
-                          <div className="p-5 flex flex-col justify-between min-h-[140px] border border-gray-100 space-y-3">
-                            <div className="space-y-2">
-                              <div className="h-4 bg-gray-200 rounded w-full" />
-                              <div className="h-4 bg-gray-200 rounded w-2/3" />
-                            </div>
-                            <div className="flex items-center justify-between mt-auto">
-                              <div className="h-6 bg-gray-200 rounded w-20" />
-                              <div className="h-9 bg-gray-200 rounded-md w-32" />
+                        <div key={i} className="animate-pulse overflow-hidden rounded-lg border border-gray-200 bg-white">
+                          <div className="h-64 bg-gray-100" />
+                          <div className="space-y-3 p-5">
+                            <div className="h-4 w-full rounded bg-gray-200" />
+                            <div className="h-4 w-2/3 rounded bg-gray-200" />
+                            <div className="flex items-center justify-between pt-2">
+                              <div className="h-6 w-20 rounded bg-gray-200" />
+                              <div className="h-11 w-32 rounded-md bg-gray-200" />
                             </div>
                           </div>
                         </div>
@@ -166,12 +146,18 @@ export default function Home() {
                   );
                 }
                 if (products.length === 0) {
-                  const emptyMessage = selectedCategory === "all" 
-                    ? "ยังไม่มีสินค้า Highlight" 
+                  const emptyMessage = selectedCategory === "all"
+                    ? "ยังไม่มีสินค้าแนะนำในขณะนี้"
                     : "ไม่พบสินค้าในหมวดหมู่นี้";
                   return (
-                    <div className="text-center py-12">
-                      <p className="text-gray-400 font-light">{emptyMessage}</p>
+                    <div className="rounded-lg border border-dashed border-gray-200 bg-gray-50/60 px-6 py-16 text-center">
+                      <p className="mb-4 text-gray-600">{emptyMessage}</p>
+                      <Link
+                        href="/products"
+                        className="focus-ring inline-flex min-h-11 items-center rounded-md bg-green-700 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-green-800"
+                      >
+                        ดูสินค้าทั้งหมด
+                      </Link>
                     </div>
                   );
                 }
@@ -180,20 +166,20 @@ export default function Home() {
             </div>
 
             {/* Homepage Banners Section */}
-            <div className="mt-12 -mx-6 md:-mx-0 content-auto">
+            <div className="content-auto mt-12">
               <div className="grid grid-cols-1 gap-4">
                 {[
-                  { src: "/homepage-banner/1411394429.gif", gif: true },
-                  { src: "/homepage-banner/1622742199.gif", gif: true },
-                  { src: "/homepage-banner/1945558495.jpg", gif: false },
-                  { src: "/homepage-banner/210884266.gif", gif: true },
-                  { src: "/homepage-banner/565772067.gif", gif: true },
-                  { src: "/homepage-banner/597570734.jpg", gif: false },
+                  { src: "/homepage-banner/1411394429.gif", gif: true, alt: "โปรโมชั่นสินค้าสุขภาพ" },
+                  { src: "/homepage-banner/1622742199.gif", gif: true, alt: "สินค้านวัตกรรมสุขภาพ" },
+                  { src: "/homepage-banner/1945558495.jpg", gif: false, alt: "แบนเนอร์สินค้า SP Pro Supply" },
+                  { src: "/homepage-banner/210884266.gif", gif: true, alt: "โปรโมชั่นพิเศษ" },
+                  { src: "/homepage-banner/565772067.gif", gif: true, alt: "สินค้าแนะนำ" },
+                  { src: "/homepage-banner/597570734.jpg", gif: false, alt: "แบนเนอร์สินค้าสุขภาพ" },
                 ].map((banner) => (
-                  <div key={banner.src} className="relative w-full rounded-lg overflow-hidden">
+                  <div key={banner.src} className="relative w-full overflow-hidden rounded-lg">
                     <Image
                       src={banner.src}
-                      alt="Homepage Banner"
+                      alt={banner.alt}
                       width={1200}
                       height={400}
                       sizes="(max-width: 768px) 100vw, 1200px"

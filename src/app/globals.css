@@ -70,3 +70,46 @@ body {
   content-visibility: auto;
   contain-intrinsic-size: auto 500px;
 }
+
+/* Consistent focus ring for interactive elements */
+.focus-ring {
+  outline: none;
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Hover scale with reduced-motion fallback */
+.hover-scale {
+  transition: transform 200ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.group:hover .hover-scale,
+.hover-scale:hover {
+  transform: scale(1.03);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hover-scale,
+  .group:hover .hover-scale,
+  .hover-scale:hover {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Section headings on storefront pages */
+.section-heading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  text-wrap: balance;
+}
+
+@media (min-width: 768px) {
+  .section-heading {
+    font-size: 1.875rem;
+  }
+}
