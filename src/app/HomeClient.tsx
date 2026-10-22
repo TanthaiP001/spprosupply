@@ -128,16 +128,16 @@ export default function HomeClient() {
               {(() => {
                 if (isLoading) {
                   return (
-                    <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid grid-cols-3 gap-2 sm:gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
                       {Array.from({ length: 6 }).map((_, i) => (
                         <div key={i} className="animate-pulse overflow-hidden rounded-lg border border-gray-200 bg-white">
-                          <div className="h-64 bg-gray-100" />
-                          <div className="space-y-3 p-5">
+                          <div className="h-28 bg-gray-100 sm:h-40 md:h-64" />
+                          <div className="space-y-2 p-2 sm:p-3 md:space-y-3 md:p-5">
                             <div className="h-4 w-full rounded bg-gray-200" />
                             <div className="h-4 w-2/3 rounded bg-gray-200" />
-                            <div className="flex items-center justify-between pt-2">
-                              <div className="h-6 w-20 rounded bg-gray-200" />
-                              <div className="h-11 w-32 rounded-md bg-gray-200" />
+                            <div className="flex flex-col gap-2 pt-2 md:flex-row md:items-center md:justify-between">
+                              <div className="h-6 w-16 rounded bg-gray-200 md:w-20" />
+                              <div className="h-11 w-full rounded-md bg-gray-200 md:w-32" />
                             </div>
                           </div>
                         </div>
@@ -161,7 +161,7 @@ export default function HomeClient() {
                     </div>
                   );
                 }
-                return <ProductGrid productsToShow={products} />;
+                return <ProductGrid productsToShow={products} denseOnMobile />;
               })()}
             </div>
 

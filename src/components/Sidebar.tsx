@@ -101,9 +101,11 @@ export default function Sidebar({ selectedCategory: externalSelectedCategory, on
         )}
       </nav>
 
-      <MemberLogin />
-      <DownloadSection />
-      <WebsiteStats />
+      <div className="hidden md:block">
+        <MemberLogin />
+        <DownloadSection />
+        <WebsiteStats />
+      </div>
     </aside>
   );
 }

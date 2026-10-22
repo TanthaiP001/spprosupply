@@ -9,14 +9,27 @@ interface CategorySidebarProps {
   onCategoryChange: (categoryId: string) => void;
 }
 
-const rowClass =
-  "flex items-center gap-3 cursor-pointer group py-2.5 px-1 -mx-1 rounded-md hover:bg-gray-50 transition-colors";
+// Mobile: horizontal scrolling chips. md+: vertical radio-style list.
+function rowClass(checked: boolean) {
+  return [
+    "group flex shrink-0 cursor-pointer items-center gap-3 whitespace-nowrap transition-colors",
+    "min-h-11 rounded-full border px-4",
+    checked ? "border-green-700 bg-green-50" : "border-gray-200 bg-white",
+    "md:min-h-0 md:-mx-1 md:rounded-md md:border-0 md:bg-transparent md:px-1 md:py-2.5 md:whitespace-normal md:hover:bg-gray-50",
+  ].join(" ");
+}
+
+function labelClass(checked: boolean) {
+  return `flex-1 text-sm transition-colors group-hover:text-black ${
+    checked ? "font-medium text-green-800 md:font-light md:text-gray-900" : "font-light text-gray-600"
+  }`;
+}
 
 function RadioDot({ checked }: { checked: boolean }) {
   return (
     <span
       aria-hidden="true"
-      className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border ${
+      className={`hidden h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border md:flex ${
         checked ? "border-black" : "border-gray-300"
       }`}
     >
@@ -30,14 +43,18 @@ export default function CategorySidebar({
   onCategoryChange,
 }: CategorySidebarProps) {
   const { categories, isLoading } = useCategories();
+  const isAll = selectedCategory === "all";
 
   return (
-    <aside className="w-full md:w-64 bg-white border-r border-gray-100 p-8">
-      <h2 className="text-base font-light text-gray-900 mb-8 tracking-wide">
+    <aside className="w-full bg-white md:w-64 md:border-r md:border-gray-100 md:p-8">
+      <h2 className="mb-3 text-sm font-light tracking-wide text-gray-900 md:mb-8 md:text-base">
         หมวดหมู่สินค้า
       </h2>
 
-      <nav aria-label="หมวดหมู่สินค้า" className="space-y-1">
+      <nav
+        aria-label="หมวดหมู่สินค้า"
+        className="scrollbar-hide -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:-mx-6 sm:px-6 md:mx-0 md:block md:space-y-1 md:overflow-visible md:px-0 md:pb-0"
+      >
         <Link
           href="/products"
           scroll={false}
@@ -45,17 +62,15 @@ export default function CategorySidebar({
             e.preventDefault();
             onCategoryChange("all");
           }}
-          aria-current={selectedCategory === "all" ? "page" : undefined}
-          className={rowClass}
+          aria-current={isAll ? "page" : undefined}
+          className={rowClass(isAll)}
         >
-          <RadioDot checked={selectedCategory === "all"} />
-          <span className="text-sm font-light text-gray-600 group-hover:text-black transition-colors flex-1">
-            สินค้าทั้งหมด
-          </span>
+          <RadioDot checked={isAll} />
+          <span className={labelClass(isAll)}>สินค้าทั้งหมด</span>
         </Link>
 
         {isLoading ? (
-          <div className="text-sm text-gray-400 py-2">กำลังโหลด...</div>
+          <div className="py-2 text-sm text-gray-400">กำลังโหลด...</div>
         ) : (
           categories
             .slice()
@@ -72,12 +87,10 @@ export default function CategorySidebar({
                     onCategoryChange(category.id);
                   }}
                   aria-current={isSelected ? "page" : undefined}
-                  className={rowClass}
+                  className={rowClass(isSelected)}
                 >
                   <RadioDot checked={isSelected} />
-                  <span className="text-sm font-light text-gray-600 group-hover:text-black transition-colors flex-1">
-                    {category.name}
-                  </span>
+                  <span className={labelClass(isSelected)}>{category.name}</span>
                 </Link>
               );
             })

@@ -97,7 +97,7 @@ export default function Pagination({
     "p-2 text-gray-500 hover:text-black disabled:opacity-30 disabled:cursor-not-allowed transition-colors";
 
   return (
-    <nav aria-label="เลขหน้า" className="flex items-center justify-center gap-1 mt-12">
+    <nav aria-label="เลขหน้า" className="mt-8 flex flex-wrap items-center justify-center gap-1 md:mt-12">
       {renderPageControl(Math.max(1, currentPage - 1), arrowClass, <ChevronLeft className="w-5 h-5" />, {
         "aria-label": "หน้าก่อนหน้า",
         disabled: currentPage === 1,

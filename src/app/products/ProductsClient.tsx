@@ -80,10 +80,10 @@ function ProductsContent() {
         </div>
         <div className="relative z-10 container-custom h-full flex items-center">
           <div className="text-white">
-            <h1 className="text-4xl md:text-5xl font-light mb-2 tracking-tight">
+            <h1 className="text-3xl md:text-5xl font-light mb-2 tracking-tight">
               {categoryName}
             </h1>
-            <p className="text-lg md:text-xl font-light text-white/90">
+            <p className="text-base md:text-xl font-light text-white/90">
               เลือกซื้อสื่อสุขศึกษาและอุปกรณ์สาธารณสุขจาก SP Pro Supply
             </p>
           </div>
@@ -91,8 +91,8 @@ function ProductsContent() {
       </div>
 
       {/* Main Product Area */}
-      <div className="container-custom py-12">
-        <div className="flex flex-col md:flex-row gap-8">
+      <div className="container-custom py-6 md:py-12">
+        <div className="flex flex-col md:flex-row gap-6 md:gap-8">
           <div className="w-full md:w-64 flex-shrink-0">
             <CategorySidebar
               selectedCategory={selectedCategory}
@@ -100,8 +100,8 @@ function ProductsContent() {
             />
           </div>
 
-          <main className="flex-1">
-            <div className="mb-8">
+          <main className="min-w-0 flex-1">
+            <div className="mb-4 md:mb-8">
               <p className="text-sm font-light text-gray-500">
                 {isLoading ? (
                   <span className="inline-block h-4 w-28 bg-gray-200 rounded animate-pulse align-middle" />
@@ -124,11 +124,11 @@ function ProductsContent() {
             </div>
 
             {isLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <div key={i} className="animate-pulse overflow-hidden rounded-lg border border-gray-200 bg-white">
-                    <div className="h-64 bg-gray-100" />
-                    <div className="space-y-3 p-5">
+                    <div className="h-28 bg-gray-100 sm:h-40 md:h-64" />
+                    <div className="space-y-2 p-2 sm:p-3 md:space-y-3 md:p-5">
                       <div className="h-4 w-full rounded bg-gray-200" />
                       <div className="h-4 w-2/3 rounded bg-gray-200" />
                     </div>
@@ -137,7 +137,7 @@ function ProductsContent() {
               </div>
             ) : paginatedProducts.length > 0 ? (
               <>
-                <ProductGrid productsToShow={paginatedProducts} />
+                <ProductGrid productsToShow={paginatedProducts} denseOnMobile />
                 {totalPages > 1 && (
                   <Pagination
                     currentPage={currentPage}
