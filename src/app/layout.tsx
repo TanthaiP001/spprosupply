@@ -5,6 +5,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import SWRProvider from "@/components/SWRProvider";
 import WebsiteStructuredData from "@/components/WebsiteStructuredData";
 import OrganizationStructuredData from "@/components/OrganizationStructuredData";
@@ -30,6 +31,7 @@ const outfit = Outfit({
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://spprosupply.com';
 const siteName = 'SP Pro Supply';
+const gaMeasurementId = process.env.NEXT_PUBLIC_GA_ID || 'G-29EV5Y6HQM';
 const siteDescription = 'สินค้าสร้างสรรค์ นวัตกรรมสุขภาพ - เอส พี โปร ซัพพลาย ร้านค้าออนไลน์คุณภาพ';
 
 export const metadata: Metadata = {
@@ -129,6 +131,7 @@ export default function RootLayout({
         <Analytics />
         <SpeedInsights />
       </body>
+      <GoogleAnalytics gaId={gaMeasurementId} />
     </html>
   );
 }

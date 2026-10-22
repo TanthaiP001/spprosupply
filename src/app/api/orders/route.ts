@@ -73,6 +73,7 @@ export async function POST(request: NextRequest) {
       const blob = await put(filename, paymentSlipFile, {
         access: "public",
         contentType: paymentSlipFile.type,
+        addRandomSuffix: true,
       });
 
       paymentSlipUrl = blob.url;
