@@ -126,8 +126,8 @@ function ProductsContent() {
             {isLoading ? (
               <div className="grid grid-cols-3 gap-2 sm:gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="animate-pulse overflow-hidden rounded-lg border border-gray-200 bg-white">
-                    <div className="h-28 bg-gray-100 sm:h-40 md:h-64" />
+                  <div key={i} className="animate-pulse overflow-hidden rounded-xl border border-green-900/10 bg-white">
+                    <div className="aspect-square bg-gray-100 md:aspect-[5/4]" />
                     <div className="space-y-2 p-2 sm:p-3 md:space-y-3 md:p-5">
                       <div className="h-4 w-full rounded bg-gray-200" />
                       <div className="h-4 w-2/3 rounded bg-gray-200" />
