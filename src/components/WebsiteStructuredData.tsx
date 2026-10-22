@@ -1,27 +1,19 @@
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://spprosupply.com';
+import JsonLd from "@/components/JsonLd";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
 export default function WebsiteStructuredData() {
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    name: 'SP Pro Supply',
-    url: siteUrl,
-    description: 'สินค้าสร้างสรรค์ นวัตกรรมสุขภาพ - เอส พี โปร ซัพพลาย ร้านค้าออนไลน์คุณภาพ',
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: {
-        '@type': 'EntryPoint',
-        urlTemplate: `${siteUrl}/products?search={search_term_string}`,
-      },
-      'query-input': 'required name=search_term_string',
-    },
-  };
-
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+    <JsonLd
+      data={{
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        name: SITE_NAME,
+        url: SITE_URL,
+        description: SITE_DESCRIPTION,
+        inLanguage: "th-TH",
+        publisher: { "@id": `${SITE_URL}/#organization` },
+      }}
     />
   );
 }
-

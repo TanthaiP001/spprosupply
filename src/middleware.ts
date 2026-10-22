@@ -9,20 +9,15 @@ import { NextRequest, NextResponse } from 'next/server';
 const STATIC_PHP_REDIRECTS: Record<string, string> = {
   'index.php': '/',
   'contactme.php': '/contact',
-  'aboutus.php': '/about',
+  'aboutus.php': '/contact',
   'products.php': '/products',
-  'news.php': '/news',
-};
-
-/** PHP files that use query param `id` → base path for redirect */
-const QUERY_ID_REDIRECTS: Record<string, string> = {
+  'news.php': '/',
   'product-detail.php': '/products',
-  'category.php': '/category',
+  'category.php': '/products',
 };
 
 function getRedirectDestination(request: NextRequest): string | null {
   const pathname = request.nextUrl.pathname;
-  const searchParams = request.nextUrl.searchParams;
 
   if (!pathname.endsWith('.php')) {
     return null;
@@ -31,31 +26,9 @@ function getRedirectDestination(request: NextRequest): string | null {
   // Normalize: strip leading slash and get the PHP filename (e.g. "product-detail.php")
   const phpFile = pathname.replace(/^\//, '').toLowerCase();
 
-  // 1) Query-param redirects: /product-detail.php?id=25 → /products/25
-  const id = searchParams.get('id');
-  if (id != null && id.trim() !== '') {
-    const base = QUERY_ID_REDIRECTS[phpFile];
-    if (base) {
-      return `${base}/${encodeURIComponent(id.trim())}`;
-    }
-  }
-
-  // 2) Static redirects: /contactme.php → /contact, etc.
-  const staticDest = STATIC_PHP_REDIRECTS[phpFile];
-  if (staticDest !== undefined) {
-    return staticDest;
-  }
-
-  // 3) Known PHP files without id: send to base path or home
-  if (phpFile === 'product-detail.php') {
-    return '/products';
-  }
-  if (phpFile === 'category.php') {
-    return '/category';
-  }
-
-  // 4) Any other .php URL → homepage
-  return '/';
+  // Legacy numeric ids (e.g. product-detail.php?id=25) have no mapping to current slugs,
+  // so they land on the listing instead of a 404.
+  return STATIC_PHP_REDIRECTS[phpFile] ?? '/';
 }
 
 export function middleware(request: NextRequest) {

@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import Link from "next/link";
 import MemberLogin from "./MemberLogin";
 import DownloadSection from "./DownloadSection";
 import WebsiteStats from "./WebsiteStats";
 import { useCategories } from "@/hooks/useCategories";
+import { categoryPath } from "@/lib/paths";
 
 interface SidebarProps {
   selectedCategory?: string;
@@ -46,9 +48,12 @@ export default function Sidebar({ selectedCategory: externalSelectedCategory, on
       </h2>
 
       <nav aria-label="หมวดหมู่สินค้า" className="mb-10 space-y-1">
-        <button
-          type="button"
-          onClick={() => handleCategoryChange("all")}
+        <Link
+          href="/products"
+          onClick={(e) => {
+            e.preventDefault();
+            handleCategoryChange("all");
+          }}
           aria-current={selectedCategory === "all" ? "true" : undefined}
           className={categoryButtonClass(selectedCategory === "all")}
         >
@@ -58,7 +63,7 @@ export default function Sidebar({ selectedCategory: externalSelectedCategory, on
           {selectedCategory === "all" && (
             <span className="h-2 w-2 shrink-0 rounded-full bg-green-700" aria-hidden="true" />
           )}
-        </button>
+        </Link>
 
         {isLoading ? (
           <div className="space-y-2 py-2" aria-busy="true" aria-label="กำลังโหลดหมวดหมู่">
@@ -74,10 +79,13 @@ export default function Sidebar({ selectedCategory: externalSelectedCategory, on
               const isSelected = selectedCategory === category.id;
 
               return (
-                <button
+                <Link
                   key={category.id}
-                  type="button"
-                  onClick={() => handleCategoryChange(category.id)}
+                  href={categoryPath(category)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleCategoryChange(category.id);
+                  }}
                   aria-current={isSelected ? "true" : undefined}
                   className={categoryButtonClass(isSelected)}
                 >
@@ -87,7 +95,7 @@ export default function Sidebar({ selectedCategory: externalSelectedCategory, on
                   {isSelected && (
                     <span className="h-2 w-2 shrink-0 rounded-full bg-green-700" aria-hidden="true" />
                   )}
-                </button>
+                </Link>
               );
             })
         )}

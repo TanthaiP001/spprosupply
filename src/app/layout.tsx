@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Noto_Sans_Thai, Outfit } from "next/font/google";
+import { Inter, Noto_Sans_Thai } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
@@ -7,8 +7,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import SWRProvider from "@/components/SWRProvider";
-import WebsiteStructuredData from "@/components/WebsiteStructuredData";
-import OrganizationStructuredData from "@/components/OrganizationStructuredData";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -23,36 +22,26 @@ const notoSansThai = Noto_Sans_Thai({
   display: "swap",
 });
 
-const outfit = Outfit({
-  variable: "--font-outfit",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://spprosupply.com';
-const siteName = 'SP Pro Supply';
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_ID || 'G-29EV5Y6HQM';
-const siteDescription = 'สินค้าสร้างสรรค์ นวัตกรรมสุขภาพ - เอส พี โปร ซัพพลาย ร้านค้าออนไลน์คุณภาพ';
+
+const defaultOgImage = {
+  url: '/banner/banner-header.png',
+  width: 1344,
+  height: 768,
+  alt: SITE_TITLE,
+};
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: `${siteName} - สินค้าสร้างสรรค์ นวัตกรรมสุขภาพ`,
-    template: `%s | ${siteName}`,
+    default: SITE_TITLE,
+    template: `%s | ${SITE_NAME}`,
   },
-  description: siteDescription,
-  keywords: [
-    'SP Pro Supply',
-    'สินค้าสร้างสรรค์',
-    'นวัตกรรมสุขภาพ',
-    'ร้านค้าออนไลน์',
-    'e-commerce',
-    'ซื้อของออนไลน์',
-    'สินค้าคุณภาพ',
-  ],
-  authors: [{ name: siteName }],
-  creator: siteName,
-  publisher: siteName,
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  authors: [{ name: SITE_NAME }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
   formatDetection: {
     email: false,
     address: false,
@@ -61,24 +50,16 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'th_TH',
-    url: siteUrl,
-    siteName: siteName,
-    title: `${siteName} - สินค้าสร้างสรรค์ นวัตกรรมสุขภาพ`,
-    description: siteDescription,
-    images: [
-      {
-        url: '/logo/logo.png',
-        width: 1200,
-        height: 630,
-        alt: siteName,
-      },
-    ],
+    siteName: SITE_NAME,
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: [defaultOgImage],
   },
   twitter: {
     card: 'summary_large_image',
-    title: `${siteName} - สินค้าสร้างสรรค์ นวัตกรรมสุขภาพ`,
-    description: siteDescription,
-    images: ['/logo/logo.png'],
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: [defaultOgImage.url],
   },
   robots: {
     index: true,
@@ -91,15 +72,9 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  verification: {
-    // Add your verification codes here
-    // google: 'your-google-verification-code',
-    // yandex: 'your-yandex-verification-code',
-    // yahoo: 'your-yahoo-verification-code',
-  },
-  alternates: {
-    canonical: siteUrl,
-  },
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } }
+    : {}),
 };
 
 export default function RootLayout({
@@ -114,13 +89,8 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://fastly.picsum.photos" />
       </head>
       <body
-        className={`${inter.variable} ${notoSansThai.variable} ${outfit.variable} antialiased`}
-        style={{
-          fontFamily: '"Inter", "Noto Sans Thai", "Outfit", sans-serif',
-        }}
+        className={`${inter.variable} ${notoSansThai.variable} antialiased`}
       >
-        <WebsiteStructuredData />
-        <OrganizationStructuredData />
         <SWRProvider>
           <AuthProvider>
             <CartProvider>

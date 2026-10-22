@@ -1,40 +1,15 @@
-import { MetadataRoute } from 'next';
+import type { MetadataRoute } from 'next';
+import { absoluteUrl } from '@/lib/site';
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://spprosupply.com';
-
   return {
     rules: [
       {
         userAgent: '*',
         allow: '/',
-        disallow: [
-          '/admin/',
-          '/api/',
-          '/cart',
-          '/payment',
-          '/profile',
-          '/orders/',
-          '/login',
-          '/register',
-        ],
-      },
-      {
-        userAgent: 'Googlebot',
-        allow: '/',
-        disallow: [
-          '/admin/',
-          '/api/',
-          '/cart',
-          '/payment',
-          '/profile',
-          '/orders/',
-          '/login',
-          '/register',
-        ],
+        disallow: ['/admin/', '/api/admin/', '/api/users/', '/api/orders/'],
       },
     ],
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: absoluteUrl('/sitemap.xml'),
   };
 }
-

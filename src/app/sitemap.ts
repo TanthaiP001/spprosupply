@@ -1,76 +1,67 @@
-import { MetadataRoute } from 'next';
+import type { MetadataRoute } from 'next';
 import { prisma } from '@/lib/prisma';
+import { categoryPath } from '@/lib/paths';
+import { absoluteUrl } from '@/lib/site';
 
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://spprosupply.com';
-
-  // Static pages
   const staticPages: MetadataRoute.Sitemap = [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/products`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/contact`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
+    { url: absoluteUrl('/') },
+    { url: absoluteUrl('/products') },
+    { url: absoluteUrl('/payment') },
+    { url: absoluteUrl('/contact') },
   ];
 
   try {
-    // Fetch all products
-    const products = await prisma.product.findMany({
-      where: {
-        slug: {
-          not: null,
+    const [products, categories] = await Promise.all([
+      prisma.product.findMany({
+        where: { slug: { not: null } },
+        select: { slug: true, updatedAt: true },
+        orderBy: { updatedAt: 'desc' },
+      }),
+      prisma.category.findMany({
+        where: { products: { some: {} } },
+        select: {
+          slug: true,
+          updatedAt: true,
+          products: {
+            select: { updatedAt: true },
+            orderBy: { updatedAt: 'desc' },
+            take: 1,
+          },
         },
-      },
-      select: {
-        slug: true,
-        updatedAt: true,
-      },
+        orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
+      }),
+    ]);
+
+    const latestProductUpdate = products[0]?.updatedAt;
+    const pages: MetadataRoute.Sitemap = staticPages.map((page) =>
+      page.url === absoluteUrl('/products') && latestProductUpdate
+        ? { ...page, lastModified: latestProductUpdate }
+        : page
+    );
+
+    const categoryPages: MetadataRoute.Sitemap = categories.map((category) => {
+      const latest = [category.updatedAt, category.products[0]?.updatedAt]
+        .filter((d): d is Date => d instanceof Date)
+        .sort((a, b) => b.getTime() - a.getTime())[0];
+      return {
+        url: absoluteUrl(categoryPath(category)),
+        ...(latest ? { lastModified: latest } : {}),
+      };
     });
 
-    // Fetch all categories
-    const categories = await prisma.category.findMany({
-      select: {
-        slug: true,
-        updatedAt: true,
-      },
-    });
+    const productPages: MetadataRoute.Sitemap = products
+      .filter((product): product is { slug: string; updatedAt: Date } => product.slug !== null)
+      .map((product) => ({
+        url: absoluteUrl(`/products/${encodeURIComponent(product.slug)}`),
+        lastModified: product.updatedAt,
+      }));
 
-    // Product pages
-    const productPages: MetadataRoute.Sitemap = products.map((product) => ({
-      url: `${baseUrl}/products/${product.slug}`,
-      lastModified: product.updatedAt,
-      changeFrequency: 'weekly' as const,
-      priority: 0.8,
-    }));
-
-    // Category pages
-    const categoryPages: MetadataRoute.Sitemap = categories.map((category) => ({
-      url: `${baseUrl}/products?category=${category.slug}`,
-      lastModified: category.updatedAt,
-      changeFrequency: 'weekly' as const,
-      priority: 0.7,
-    }));
-
-    return [...staticPages, ...productPages, ...categoryPages];
+    return [...pages, ...categoryPages, ...productPages];
   } catch (error) {
     console.error('Error generating sitemap:', error);
-    // Return static pages only if database query fails
     return staticPages;
   }
 }
-

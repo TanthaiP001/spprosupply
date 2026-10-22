@@ -1,23 +1,15 @@
 import type { NextConfig } from "next";
 
-/**
- * SEO-friendly 301 redirects for legacy PHP URLs (static mappings).
- * Dynamic redirects (e.g. product-detail.php?id=25 → /products/25) are
- * handled in src/middleware.ts. Unknown .php URLs also redirect to /
- * in middleware.
- */
-const phpRedirects = [
-  { source: "/index.php", destination: "/", permanent: true },
-  { source: "/contactme.php", destination: "/contact", permanent: true },
-  { source: "/aboutus.php", destination: "/about", permanent: true },
-  { source: "/products.php", destination: "/products", permanent: true },
-  { source: "/news.php", destination: "/news", permanent: true },
-  { source: "/product-detail.php", destination: "/products", permanent: true },
-  { source: "/category.php", destination: "/category", permanent: true },
-];
+// Legacy .php URLs are redirected in src/middleware.ts (which also drops their query strings).
+const apexToWwwRedirect = {
+  source: "/:path*",
+  has: [{ type: "host" as const, value: "spprosupply.com" }],
+  destination: "https://www.spprosupply.com/:path*",
+  permanent: true,
+};
 
 const nextConfig: NextConfig = {
-  redirects: async () => phpRedirects,
+  redirects: async () => [apexToWwwRedirect],
   headers: async () => [
     {
       source: "/:all*(svg|jpg|jpeg|png|gif|ico|webp)",

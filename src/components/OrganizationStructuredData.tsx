@@ -1,30 +1,34 @@
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://spprosupply.com';
+import JsonLd from "@/components/JsonLd";
+import { FACEBOOK_URL, SITE_LOGO_PATH, SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
 
 export default function OrganizationStructuredData() {
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: 'SP Pro Supply',
-    url: siteUrl,
-    logo: `${siteUrl}/logo/logo.png`,
-    description: 'สินค้าสร้างสรรค์ นวัตกรรมสุขภาพ - เอส พี โปร ซัพพลาย',
-    contactPoint: {
-      '@type': 'ContactPoint',
-      contactType: 'Customer Service',
-      availableLanguage: ['Thai'],
-    },
-    sameAs: [
-      // Add your social media links here
-      // 'https://www.facebook.com/spprosupply',
-      // 'https://www.instagram.com/spprosupply',
-    ],
-  };
-
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+    <JsonLd
+      data={{
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "@id": `${SITE_URL}/#organization`,
+        name: SITE_NAME,
+        alternateName: "เอส พี โปร ซัพพลาย",
+        url: SITE_URL,
+        logo: absoluteUrl(SITE_LOGO_PATH),
+        email: "spprosupply@gmail.com",
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "164/1 หมู่ 5 ตำบลโคกคราม",
+          addressLocality: "อำเภอบางปลาม้า",
+          addressRegion: "สุพรรณบุรี",
+          postalCode: "72150",
+          addressCountry: "TH",
+        },
+        contactPoint: {
+          "@type": "ContactPoint",
+          telephone: "+66-81-011-6699",
+          contactType: "customer service",
+          availableLanguage: ["th"],
+        },
+        sameAs: [FACEBOOK_URL],
+      }}
     />
   );
 }
-
