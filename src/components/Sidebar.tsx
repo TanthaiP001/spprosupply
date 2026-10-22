@@ -27,11 +27,12 @@ export default function Sidebar({ selectedCategory: externalSelectedCategory, on
     }
   }, [onCategoryChange]);
 
+  // Mobile: horizontal scrolling chips. md+: vertical list.
   const categoryButtonClass = (isSelected: boolean) =>
-    `flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left transition-colors focus-ring ${
+    `focus-ring flex shrink-0 items-center gap-3 whitespace-nowrap transition-colors min-h-11 rounded-full border px-4 md:min-h-0 md:w-full md:whitespace-normal md:rounded-md md:border-0 md:px-3 md:py-2.5 md:text-left ${
       isSelected
-        ? "bg-green-50 ring-1 ring-green-700/25 shadow-sm"
-        : "hover:bg-gray-50"
+        ? "border-green-700 bg-green-50 md:ring-1 md:ring-green-700/25 md:shadow-sm"
+        : "border-gray-200 bg-white md:bg-transparent md:hover:bg-gray-50"
     }`;
 
   const categoryLabelClass = (isSelected: boolean) =>
@@ -41,13 +42,20 @@ export default function Sidebar({ selectedCategory: externalSelectedCategory, on
         : "font-normal text-gray-600 hover:text-green-800"
     }`;
 
+  const selectedDot = (
+    <span className="hidden h-2 w-2 shrink-0 rounded-full bg-green-700 md:block" aria-hidden="true" />
+  );
+
   return (
-    <aside className="w-full md:w-64 border-r border-gray-200 bg-gradient-to-b from-white to-gray-50/40 p-6 md:p-8">
-      <h2 className="mb-6 text-sm font-semibold tracking-wide text-green-800">
+    <aside className="w-full md:w-64 md:border-r md:border-gray-200 md:bg-gradient-to-b md:from-white md:to-gray-50/40 md:p-8">
+      <h2 className="mb-3 text-sm font-semibold tracking-wide text-green-800 md:mb-6">
         หมวดหมู่
       </h2>
 
-      <nav aria-label="หมวดหมู่สินค้า" className="mb-10 space-y-1">
+      <nav
+        aria-label="หมวดหมู่สินค้า"
+        className="scrollbar-hide -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:-mx-6 sm:px-6 md:mx-0 md:mb-10 md:block md:space-y-1 md:overflow-visible md:px-0 md:pb-0"
+      >
         <Link
           href="/products"
           onClick={(e) => {
@@ -60,15 +68,13 @@ export default function Sidebar({ selectedCategory: externalSelectedCategory, on
           <span className={categoryLabelClass(selectedCategory === "all")}>
             สินค้าทั้งหมด
           </span>
-          {selectedCategory === "all" && (
-            <span className="h-2 w-2 shrink-0 rounded-full bg-green-700" aria-hidden="true" />
-          )}
+          {selectedCategory === "all" && selectedDot}
         </Link>
 
         {isLoading ? (
-          <div className="space-y-2 py-2" aria-busy="true" aria-label="กำลังโหลดหมวดหมู่">
+          <div className="flex gap-2 md:block md:space-y-2 md:py-2" aria-busy="true" aria-label="กำลังโหลดหมวดหมู่">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-10 animate-pulse rounded-md bg-gray-100" />
+              <div key={i} className="h-11 w-24 shrink-0 animate-pulse rounded-full bg-gray-100 md:h-10 md:w-auto md:rounded-md" />
             ))}
           </div>
         ) : (
@@ -92,9 +98,7 @@ export default function Sidebar({ selectedCategory: externalSelectedCategory, on
                   <span className={categoryLabelClass(isSelected)}>
                     {category.name}
                   </span>
-                  {isSelected && (
-                    <span className="h-2 w-2 shrink-0 rounded-full bg-green-700" aria-hidden="true" />
-                  )}
+                  {isSelected && selectedDot}
                 </Link>
               );
             })

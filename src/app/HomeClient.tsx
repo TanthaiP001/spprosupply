@@ -122,9 +122,17 @@ export default function HomeClient() {
 
             {/* Product Highlight Section */}
             <div className="mt-8">
-              <h2 className="section-heading mb-6">
-                {selectedCategory === "all" ? "สินค้าขายดี" : "สินค้าในหมวดหมู่"}
-              </h2>
+              <div className="mb-6 flex items-center justify-between gap-4">
+                <h2 className="section-heading">
+                  {selectedCategory === "all" ? "สินค้าขายดี" : "สินค้าในหมวดหมู่"}
+                </h2>
+                <Link
+                  href="/products"
+                  className="focus-ring inline-flex min-h-11 shrink-0 items-center rounded-md px-2 text-sm font-medium text-green-700 transition-colors hover:text-green-800 hover:underline"
+                >
+                  ดูสินค้าทั้งหมด
+                </Link>
+              </div>
               {(() => {
                 if (isLoading) {
                   return (
